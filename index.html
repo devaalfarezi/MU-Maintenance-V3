@@ -301,8 +301,8 @@ body.exporting .appbar{position:static!important;background:#fff!important;-webk
 .pmtop{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px;margin-bottom:6px}
 .pmlegend{display:flex;gap:16px;align-items:center;font-size:12px;color:var(--tx-2);flex-wrap:wrap}
 .pmlegend .sw{display:inline-flex;align-items:center;gap:6px}
-.dotY{width:12px;height:12px;border-radius:50%;background:#e8a93c;box-shadow:inset 0 1px 0 rgba(255,255,255,.4)}
-.triR{width:0;height:0;border-left:7px solid transparent;border-right:7px solid transparent;border-bottom:12px solid #e2574c}
+.dotY{width:13px;height:13px;border-radius:50%;background:#d99a1f}
+.triR{width:0;height:0;border-left:7px solid transparent;border-right:7px solid transparent;border-bottom:13px solid #e2574c}
 .pmboard{overflow-x:auto;-webkit-overflow-scrolling:touch;border:.5px solid var(--bd-1);border-radius:var(--r-md)}
 table.pmcal{width:100%;border-collapse:collapse;font-size:12px;min-width:820px}
 table.pmcal th.mon{padding:8px 4px;color:var(--blue);font-weight:700;text-align:center;border-bottom:.5px solid var(--bd-1)}
@@ -314,10 +314,10 @@ table.pmcal td.cel.mt{cursor:default}
 table.pmcal td.cel.mt:hover{background:transparent}
 .celtop{display:flex;align-items:flex-start;justify-content:space-between;gap:4px}
 .celn{font-size:10px;color:var(--tx-3);flex-shrink:0}
-.mgrid{display:flex;flex-wrap:wrap;gap:3px;max-width:88px}
+.mgrid{display:grid;gap:3px}
 .mk{width:11px;height:11px;flex-shrink:0;display:block}
-.mk.p{border-radius:50%;background:#e8a93c}
-.mk.b{width:0;height:0;background:transparent;border-left:6px solid transparent;border-right:6px solid transparent;border-bottom:11px solid #e2574c}
+.mk.p{border-radius:50%;background:#d99a1f}
+.mk.b{width:0;height:0;background:transparent;border-left:5.5px solid transparent;border-right:5.5px solid transparent;border-bottom:11px solid #e2574c}
 table.pmcal tr.sig td{background:var(--bg-soft);text-align:center;font-size:10px;color:var(--tx-3);padding:4px 0}
 table.pmcal tr.sig td.cn{color:var(--tx-3);font-weight:700}
 .pmhint{font-size:11px;color:var(--tx-3);margin-top:8px}
@@ -334,6 +334,45 @@ table.pmcal tr.sig td.cn{color:var(--tx-3);font-weight:700}
 .eqgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(46px,1fr));gap:6px}
 .pm-modal-legend{display:flex;gap:16px;font-size:12px;color:var(--tx-2);margin-bottom:10px;flex-wrap:wrap}
 .pm-modal-legend .sw{display:inline-flex;align-items:center;gap:6px}
+
+.overlay{position:fixed;inset:0;background:rgba(15,23,42,.45);display:none;align-items:center;justify-content:center;padding:16px;z-index:120}
+.overlay.open{display:flex}
+.modal{background:var(--bg-card);border:.5px solid var(--bd-1);border-radius:14px;box-shadow:0 24px 60px rgba(0,0,0,.35);width:100%;max-width:640px;max-height:88vh;display:flex;flex-direction:column}
+.modal-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:13px 18px;border-bottom:.5px solid var(--bd-1)}
+.modal-head .lab{font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--tx-3);font-weight:700}
+.modal-head .ttl{font-size:19px;font-weight:700;line-height:1.2;color:var(--tx-1)}
+.modal-head .cnt{font-size:21px;font-weight:700;line-height:1;color:var(--tx-1)}
+.modal-head .cnt-lab{font-size:10px;color:var(--tx-3)}
+.x{width:34px;height:34px;border:0;background:transparent;border-radius:9px;cursor:pointer;font-size:18px;color:var(--tx-2)}
+.x:hover{background:var(--bg-soft)}
+.modal-body{padding:14px 18px;overflow:auto;-webkit-overflow-scrolling:touch}
+.crow{display:flex;align-items:center;justify-content:space-between;gap:12px;border:.5px solid var(--bd-1);border-left:4px solid var(--tx-3);border-radius:12px;padding:12px 14px;margin-bottom:10px;cursor:pointer;transition:.14s;background:var(--bg-card)}
+.crow:hover{background:var(--bg-soft);box-shadow:var(--shadow-sm)}
+.crow .a{font-weight:700;font-size:15px;color:var(--tx-1)}
+.crow .b{font-size:12px;color:var(--tx-3);margin-top:2px}
+.crow .rt{display:flex;align-items:center;gap:8px;flex-shrink:0}
+.cbadge{min-width:30px;height:26px;padding:0 9px;border-radius:999px;display:inline-flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#fff}
+.crow .chev{color:var(--tx-3);font-size:18px}
+.cdot{width:11px;height:11px;border-radius:50%;flex-shrink:0}
+.ctri{width:0;height:0;border-left:6px solid transparent;border-right:6px solid transparent;border-bottom:12px solid #e2574c;flex-shrink:0}
+.leftline{display:flex;align-items:center;gap:11px;min-width:0}
+.jrow{border:.5px solid var(--bd-1);border-radius:12px;padding:14px 16px;margin-bottom:12px}
+.jrow.p{border-left:4px solid #d99a1f}
+.jrow.b{border-left:4px solid #e2574c}
+.jlab{font-size:11px;text-transform:uppercase;letter-spacing:.04em;color:var(--tx-3);font-weight:700}
+.jval{font-size:16px;font-weight:700;color:var(--tx-1);margin-top:2px}
+.jgrid{display:flex;gap:26px;flex-wrap:wrap;margin-top:10px}
+.jgrid>div{min-width:0}
+.jfoot{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:12px;padding-top:11px;border-top:.5px solid var(--bd-1)}
+.jwk{margin-left:auto;font-size:11px;padding:3px 9px;border-radius:999px;font-weight:700}
+.jwk.p{background:rgba(217,154,31,.16);color:#8a5a12}
+.jwk.b{background:var(--danger-bg);color:var(--danger-tx)}
+:root[data-theme="dark"] .jwk.p{color:#f0c063}
+.jrange{font-size:12px;color:var(--tx-3)}
+.jpic{background:var(--info-bg);color:var(--info-tx);border-radius:8px;padding:3px 10px;font-weight:700;font-size:12px}
+.jstat{background:var(--ok-bg);color:var(--ok-tx);border-radius:8px;padding:3px 10px;font-weight:600;font-size:12px}
+.backbtn{width:34px;height:34px;border:.5px solid var(--bd-1);background:var(--bg-card);border-radius:9px;cursor:pointer;font-size:17px;color:var(--tx-2);flex-shrink:0}
+.backbtn:hover{background:var(--bg-soft)}
 
 @media (max-width:680px){
   .brand p{display:none}
@@ -564,6 +603,28 @@ table.pmcal tr.sig td.cn{color:var(--tx-3);font-weight:700}
   </div>
 
   <p class="foot">Semua angka dihitung di browser dari file yang di-upload · interval PM diturunkan dari MTBF</p>
+</div>
+
+<div class="overlay" id="overlay">
+  <div class="modal" id="pmModal">
+    <div class="modal-head">
+      <div style="display:flex;align-items:center;gap:10px;min-width:0">
+        <button class="backbtn" id="m-back" title="Kembali" style="display:none">&larr;</button>
+        <div style="min-width:0">
+          <div class="lab" id="m-lab">Equipment</div>
+          <div class="ttl" id="m-title">&mdash;</div>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:12px">
+        <div style="text-align:right">
+          <div class="cnt mono" id="m-count">0</div>
+          <div class="cnt-lab" id="m-count-lab">item</div>
+        </div>
+        <button class="x" id="m-close">&times;</button>
+      </div>
+    </div>
+    <div class="modal-body" id="m-body"></div>
+  </div>
 </div>
 
 <div class="toasts" id="toasts"></div>
@@ -1278,12 +1339,12 @@ function parsePM(wb){
 function breakdownEvents(){
   if(!S.dt||!S.dt.raw)return [];
   return S.dt.raw.filter(function(r){return r.isb;}).map(function(r){
-    return {kind:'b', equipment:r.eqe, subassy:'', component:r.det, action:r.desc||r.loss,
-      task:r.cat, pic:'', status:r.line, dur:r.dur, dateObj:r._d||null, mo:r.mo, line:r.line,
-      packer:r.packer, cat:r.cat, loss:r.loss, desc:r.desc};
+    return {kind:'b', equipment:r.eqe, component:r.det, action:r.desc||'-',
+      task:(r.cat&&r.cat!=='(Kosong)'?r.cat:r.loss), pic:'', status:r.line,
+      dur:r.dur, dateObj:r._d||null, mo:r.mo, line:r.line, packer:r.packer,
+      cat:r.cat, loss:r.loss, desc:r.desc, det:r.det};
   });
 }
-
 /* --- bangun sel kalender: cellPM[wom][mi] = {p:[...], b:[...]} --- */
 function buildCal(){
   var y=calYear(), cells=[];
@@ -1315,11 +1376,19 @@ function cellItems(c){
   return {p:p,b:b};
 }
 function miniMarks(c){
-  var it=cellItems(c), html='<div class="mgrid">', tot=it.p.length+it.b.length;
-  var cap=12, shown=0;
-  for(var i=0;i<it.p.length&&shown<cap;i++,shown++) html+='<span class="mk p"></span>';
-  for(var j=0;j<it.b.length&&shown<cap;j++,shown++) html+='<span class="mk b"></span>';
-  html+='</div>'; return {html:html, n:tot};
+  var it=cellItems(c);
+  var marks=[];
+  it.p.forEach(function(){marks.push('p');});
+  it.b.forEach(function(){marks.push('b');});
+  var n=marks.length; if(n===0) return {html:'', n:0};
+  var side=Math.max(1,Math.ceil(Math.sqrt(n)));
+  var cells=side*side;
+  var html='<div class="mgrid" style="grid-template-columns:repeat('+side+',11px)">';
+  for(var i=0;i<cells;i++){
+    if(i<n) html+='<span class="mk '+marks[i]+'"></span>';
+    else    html+='<span class="mk" style="background:transparent;border-bottom:none;width:11px;height:11px"></span>';
+  }
+  html+='</div>'; return {html:html, n:n};
 }
 function renderCal(){
   if(!S_pm && !(S.dt&&S.dt.raw)){
@@ -1353,67 +1422,104 @@ function renderCal(){
   el('pmSub').textContent=nf.format(np)+' jadwal PM (Proses) \u00b7 '+nf.format(nb)+' kejadian Breakdown \u00b7 tahun '+calYear();
 }
 
-/* --- MODAL kalender: level 1 grid equipment, level 2 detail --- */
+/* --- MODAL kalender: level 1 daftar Proses/Breakdown, level 2 equipment, level 3 detail --- */
 var calCur=null;
-function calByEq(wi,mi){
-  var c=CAL[wi][mi], it=cellItems(c), map={};
-  function push(e){ var k=e.equipment||'(Tanpa equipment)'; (map[k]=map[k]||{p:[],b:[]})[e.kind].push(e); }
-  it.p.forEach(push); it.b.forEach(push);
-  return map;
+function cellGroups(wi,mi){
+  var c=CAL[wi][mi], it=cellItems(c), G={};
+  function add(e){
+    var key;
+    if(e.kind==='p'){ key=(e.proc && e.proc.toLowerCase()!=='pm' && e.proc!=='') ? e.proc : (e.equipment||'(Tanpa equipment)'); }
+    else { key=(e.cat && e.cat!=='(Kosong)') ? e.cat : (e.loss||'Breakdown'); }
+    var g=G[key]||(G[key]={key:key,kind:e.kind,items:[],eq:{}});
+    g.items.push(e);
+    (g.eq[e.equipment||'(Tanpa equipment)']=g.eq[e.equipment||'(Tanpa equipment)']||[]).push(e);
+    if(e.kind!==g.kind) g.kind='mix';
+  }
+  it.p.forEach(add); it.b.forEach(add);
+  return G;
 }
+var PMCOL=['#3f6fa0','#4b8b6e','#b58a2b','#7a5aa8','#4a7f97','#9a5a3a','#5a7d3a','#8a5a6a'];
+function colorFor(name){ var s=0; for(var i=0;i<name.length;i++)s=(s*31+name.charCodeAt(i))%997; return PMCOL[s%PMCOL.length]; }
+
 function openCalCell(wi,mi){
-  calCur={wi:wi,mi:mi};
-  var map=calByEq(wi,mi), keys=Object.keys(map).sort();
-  el('m-back').style.display='none';
-  el('m-lab').textContent='Equipment \u00b7 PM & Breakdown';
-  el('m-title').textContent=CAL_MO[mi]+' \u00b7 '+CAL_WK[wi];
-  el('m-count').textContent=keys.length; el('m-count-lab').textContent='equipment';
-  var body=el('m-body');
-  var html='<div class="pm-modal-legend"><span class="sw"><span class="dotY"></span> ada PM</span>'
-    +'<span class="sw"><span class="triR"></span> ada Breakdown</span>'
-    +'<span class="sw"><span class="eqbox" style="width:16px;height:16px;background:var(--bg-soft)"></span> tidak ada</span></div>'
-    +'<div class="grid-hint" style="font-size:12px;color:var(--tx-2);margin-bottom:10px">Kotak berwarna = equipment terjadwal/kejadian di sel ini. Klik untuk detail.</div>'
-    +'<div class="eqgrid">';
-  keys.forEach(function(k,i){
-    var g=map[k], hasP=g.p.length>0, hasB=g.b.length>0;
-    var cls=hasP&&hasB?'pb':hasP?'p':'b';
-    html+='<div class="eqbox on '+cls+'" title="'+esc(k)+(hasP?' \u00b7 PM '+g.p.length:'')+(hasB?' \u00b7 BKD '+g.b.length:'')+'" data-eq="'+esc(k)+'">'+(i+1)+'</div>';
-  });
-  html+='</div>';
-  if(!keys.length) html='<div class="empty"><div class="eico"><i class="ti ti-calendar-off"></i></div><p>Tidak ada jadwal/kejadian pada filter ini.</p></div>';
-  body.innerHTML=html; body.scrollTop=0;
-  body.querySelectorAll('.eqbox.on').forEach(function(b){ b.addEventListener('click',function(){openCalDetail(b.getAttribute('data-eq'));}); });
+  calCur={wi:wi,mi:mi,stack:[]};
+  renderCalLevel1();
   overlay.classList.add('open');
 }
-function openCalDetail(eqName){
-  var map=calByEq(calCur.wi,calCur.mi), g=map[eqName]||{p:[],b:[]};
-  el('m-back').style.display=''; 
-  el('m-lab').textContent='Detail \u00b7 '+CAL_MO[calCur.mi]+' '+CAL_WK[calCur.wi];
-  el('m-title').textContent=eqName;
-  el('m-count').textContent=g.p.length+g.b.length; el('m-count-lab').textContent='item';
+function renderCalLevel1(){
+  var wi=calCur.wi, mi=calCur.mi, G=cellGroups(wi,mi);
+  var keys=Object.keys(G).sort(function(a,b){return G[b].items.length-G[a].items.length;});
+  el('m-back').style.display='none';
+  el('m-lab').textContent = pmView==='b'?'BREAKDOWN':(pmView==='p'?'PROSES':'PROSES & BREAKDOWN');
+  el('m-title').textContent=CAL_MO[mi]+' \u00b7 '+CAL_WK[wi];
+  var tot=0; keys.forEach(function(k){tot+=G[k].items.length;});
+  el('m-count').textContent=tot; el('m-count-lab').textContent='jadwal';
+  var body=el('m-body');
+  if(!keys.length){ body.innerHTML='<div class="empty"><div class="eico"><i class="ti ti-calendar-off"></i></div><p>Tidak ada jadwal/kejadian pada filter ini.</p></div>'; body.scrollTop=0; return; }
+  var html='<div class="grid-hint" style="font-size:13px;color:var(--tx-2);margin-bottom:12px">Klik untuk lihat equipment-nya.</div>';
+  keys.forEach(function(k){
+    var g=G[k], neq=Object.keys(g.eq).length, isB=g.kind==='b';
+    var mark=isB?'<span class="ctri"></span>':'<span class="cdot" style="background:'+colorFor(k)+'"></span>';
+    var bcol=isB?'#e2574c':colorFor(k);
+    html+='<div class="crow" style="border-left-color:'+bcol+'" data-g="'+esc(k)+'">'
+      +'<span class="leftline">'+mark+'<span><span class="a">'+esc(k)+'</span>'
+      +'<span class="b">'+nf.format(neq)+' equipment \u00b7 '+nf.format(g.items.length)+' jadwal</span></span></span>'
+      +'<span class="rt"><span class="cbadge" style="background:'+bcol+'">'+nf.format(g.items.length)+'</span><span class="chev">\u203a</span></span></div>';
+  });
+  body.innerHTML=html; body.scrollTop=0;
+  body.querySelectorAll('.crow').forEach(function(r){ r.addEventListener('click',function(){ renderCalLevel2(r.getAttribute('data-g')); }); });
+}
+function renderCalLevel2(gkey){
+  var G=cellGroups(calCur.wi,calCur.mi), g=G[gkey]; if(!g)return;
+  calCur.g=gkey;
+  el('m-back').style.display=''; el('m-back').onclick=renderCalLevel1;
+  el('m-lab').textContent=(g.kind==='b'?'BREAKDOWN':'PROSES')+' \u00b7 '+CAL_MO[calCur.mi]+' '+CAL_WK[calCur.wi];
+  el('m-title').textContent=gkey;
+  var eqs=Object.keys(g.eq).sort();
+  el('m-count').textContent=eqs.length; el('m-count-lab').textContent='equipment';
+  var body=el('m-body');
+  var html='<div class="grid-hint" style="font-size:13px;color:var(--tx-2);margin-bottom:12px">Equipment pada '+(g.kind==='b'?'kategori':'proses')+' ini. Klik untuk lihat detail pekerjaannya.</div>';
+  eqs.forEach(function(eq){
+    var arr=g.eq[eq], isB=arr[0].kind==='b', bcol=isB?'#e2574c':colorFor(gkey);
+    var mark=isB?'<span class="ctri"></span>':'<span class="cdot" style="background:'+bcol+'"></span>';
+    html+='<div class="crow" style="border-left-color:'+bcol+'" data-eq="'+esc(eq)+'">'
+      +'<span class="leftline">'+mark+'<span><span class="a">'+esc(eq)+'</span>'
+      +'<span class="b">'+nf.format(arr.length)+' jadwal</span></span></span>'
+      +'<span class="rt"><span class="cbadge" style="background:'+bcol+'">'+nf.format(arr.length)+'</span><span class="chev">\u203a</span></span></div>';
+  });
+  body.innerHTML=html; body.scrollTop=0;
+  body.querySelectorAll('.crow').forEach(function(r){ r.addEventListener('click',function(){ renderCalLevel3(gkey,r.getAttribute('data-eq')); }); });
+}
+function renderCalLevel3(gkey,eq){
+  var G=cellGroups(calCur.wi,calCur.mi), g=G[gkey]; if(!g)return;
+  var arr=g.eq[eq]||[];
+  el('m-back').style.display=''; el('m-back').onclick=function(){renderCalLevel2(gkey);};
+  el('m-lab').textContent=gkey+' \u00b7 '+CAL_MO[calCur.mi]+' '+CAL_WK[calCur.wi];
+  el('m-title').textContent=eq;
+  el('m-count').textContent=arr.length; el('m-count-lab').textContent='jadwal';
   var body=el('m-body'), html='';
-  function card(e){
+  arr.forEach(function(e){
     var isB=e.kind==='b';
-    var pic=e.pic?'<span class="pic">PIC: '+esc(e.pic)+'</span>':'';
-    var sub='<span class="k">Component:</span> '+esc(e.component||'-')
-          +' &nbsp;&middot;&nbsp; <span class="k">Action:</span> '+esc(e.action||'-')
-          +' &nbsp;&middot;&nbsp; <span class="k">Task:</span> '+esc(e.task||'-');
-    return '<div class="row" style="border-left-color:'+(isB?'#e2574c':'#e8a93c')+'">'
-      +'<div class="row-eq">'+esc(e.equipment)+' <span class="mtag '+(isB?'b':'p')+'">'+(isB?'Breakdown':'Proses (PM)')+'</span></div>'
-      +'<div class="row-sub">'+sub+'</div>'
-      +'<div class="row-meta">'+pic
-      + (isB&&e.dur!=null?'<span class="status">Durasi '+nf.format(Math.round(e.dur))+' mnt</span>':'')
-      + (e.status&&!isB?'<span class="status">'+esc(e.status)+'</span>':'')
-      + (isB&&e.line?'<span class="status">'+esc(e.line)+'</span>':'')
-      + '<span class="wk mono" style="background:'+(isB?'#fef2f2':'rgba(232,169,60,.14)')+';color:'+(isB?'#e2574c':'#8a5a12')+'">W'+(e.week!=null?(e.week<10?'0':'')+e.week:'-')+'</span>'
-      + '<span class="daterange mono">'+esc(e.range||'')+'</span>'
-      + '</div></div>';
-  }
-  g.p.forEach(function(e){html+=card(e);});
-  g.b.forEach(function(e){html+=card(e);});
+    html+='<div class="jrow '+(isB?'b':'p')+'">'
+      +'<div class="jlab">Component</div><div class="jval">'+esc(e.component||'-')+'</div>'
+      +'<div class="jgrid">'
+      +'<div><div class="jlab">Action</div><div style="font-size:14px;color:var(--tx-1);margin-top:2px">'+esc(e.action||'-')+'</div></div>'
+      +'<div><div class="jlab">Task</div><div style="font-size:14px;color:var(--tx-1);margin-top:2px">'+esc(e.task||'-')+'</div></div>'
+      +(isB&&e.line?'<div><div class="jlab">Line</div><div style="font-size:14px;color:var(--tx-1);margin-top:2px">'+esc(e.line)+'</div></div>':'')
+      +(isB&&e.dur!=null?'<div><div class="jlab">Durasi</div><div style="font-size:14px;color:var(--tx-1);margin-top:2px">'+nf.format(Math.round(e.dur))+' mnt</div></div>':'')
+      +'</div>'
+      +'<div class="jfoot">'
+      +(e.pic?'<span class="jpic">PIC: '+esc(e.pic)+'</span>':'')
+      +(!isB&&e.status?'<span class="jstat">'+esc(e.status)+'</span>':'')
+      +(isB&&e.loss?'<span class="jstat" style="background:var(--danger-bg);color:var(--danger-tx)">'+esc(e.loss)+'</span>':'')
+      +'<span class="jwk '+(isB?'b':'p')+'">W'+(e.week!=null?(e.week<10?'0':'')+e.week:'-')+'</span>'
+      +'<span class="jrange">'+esc(e.range||'')+'</span>'
+      +'</div></div>';
+  });
   body.innerHTML=html||'<div class="empty-msg">Tidak ada detail.</div>';
   body.scrollTop=0;
 }
+function closeCalModal(){ overlay.classList.remove('open'); }
 
 /* ================= FILE INTAKE ================= */
 function classifyAndParse(wb,fname){
@@ -1526,6 +1632,9 @@ document.querySelectorAll('.tg[data-pmv]').forEach(function(b){b.addEventListene
  document.querySelectorAll('.tg[data-pmv]').forEach(function(x){x.classList.remove('on')});b.classList.add('on');
  pmView=b.dataset.pmv; renderCal();});});
 el('pmSearch').addEventListener('input',renderCal);
+el('m-close').addEventListener('click',closeCalModal);
+overlay.addEventListener('click',function(e){ if(e.target===overlay) closeCalModal(); });
+document.addEventListener('keydown',function(e){ if(e.key==='Escape') closeCalModal(); });
 el('stSearch').addEventListener('input',function(){if(S.us&&S.st)renderST();});
 
 /* ---- COLLAPSE / ACCORDION ---- */
