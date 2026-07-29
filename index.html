@@ -1087,6 +1087,7 @@ function renderDT(){
   el('crumb').style.display='flex';
   el('durInfo').textContent=(durMin!=null||durMax!=null)?'(filter durasi aktif)':'';
   setPill(D.sample?'sample':'real',D.sample?'Contoh data':'Data ter-upload');
+  if(typeof renderCal==='function' && !renderDT._inCal){ renderDT._inCal=true; try{renderCal();}finally{renderDT._inCal=false;} }
 }
 function afterDT(){ resetFilters(); renderFilters(); renderDT(); renderCal(); }
 
@@ -1342,7 +1343,7 @@ function parsePM(wb){
 /* --- kumpulan kejadian breakdown dari data downtime (MU-Maintenance) --- */
 function breakdownEvents(){
   if(!S.dt||!S.dt.raw)return [];
-  return S.dt.raw.filter(function(r){return r.isb;}).map(function(r){
+  return filteredRows().filter(function(r){return r.isb;}).map(function(r){
     return {kind:'b', equipment:r.eqe, component:r.det, action:r.desc||'-',
       task:(r.cat&&r.cat!=='(Kosong)'?r.cat:r.loss), pic:'', status:r.line,
       dur:r.dur, dateObj:r._d||null, mo:r.mo, line:r.line, packer:r.packer,
@@ -1424,7 +1425,11 @@ function renderCal(){
     td.addEventListener('click',function(){openCalCell(+td.getAttribute('data-w'),+td.getAttribute('data-m'));});
   });
   var np=0,nb=0; CAL.forEach(function(row){row.forEach(function(c){var it=cellItems(c);np+=it.p.length;nb+=it.b.length;});});
-  el('pmSub').textContent=nf.format(np)+' jadwal PM (Preventive Maintenance) \u00b7 '+nf.format(nb)+' kejadian Breakdown \u00b7 tahun 2025';
+  var nfl=(typeof paintCaps==='function')?0:0;
+  var totalB=(S.dt&&S.dt.raw)?S.dt.raw.filter(function(r){return r.isb;}).length:0;
+  var filtered = nb!==totalB;
+  el('pmSub').textContent=nf.format(np)+' jadwal PM \u00b7 '+nf.format(nb)+' kejadian Breakdown'
+    +(filtered?' (terfilter dari '+nf.format(totalB)+')':'')+' \u00b7 tahun 2025';
 }
 
 /* --- MODAL kalender: level 1 daftar Proses/Breakdown, level 2 equipment, level 3 detail --- */
