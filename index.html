@@ -1,0 +1,1572 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MU — Maintenance</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.7.0/dist/tabler-icons.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/html2pdf.js@0.10.1/dist/html2pdf.bundle.min.js"></script>
+<style>
+:root{
+  --bg-page:#faf9f5; --bg-card:#ffffff; --bg-soft:#f1efe8; --bg-elev:#fbfaf7;
+  --tx-1:#2b2b29; --tx-2:#5f5e5a; --tx-3:#8a897f;
+  --bd-1:rgba(0,0,0,.08); --bd-2:rgba(0,0,0,.16);
+  --info-bg:#e6f1fb; --info-tx:#185fa5;
+  --danger-bg:#fcebeb; --danger-tx:#a32d2d;
+  --warn-bg:#faeeda; --warn-tx:#854f0b;
+  --ok-bg:#eaf3de; --ok-tx:#3b6d11;
+  --r-sm:8px; --r-md:10px; --r-lg:16px; --r-pill:999px;
+  --red:#e24b4a; --blue:#378add; --green:#3b6d11;
+  --glow:rgba(55,138,221,.06);
+  --shadow-sm:0 1px 2px rgba(28,28,26,.04),0 2px 8px rgba(28,28,26,.05);
+  --shadow-md:0 4px 14px rgba(28,28,26,.07),0 14px 34px rgba(28,28,26,.06);
+}
+:root[data-theme="dark"]{
+  --bg-page:#000000; --bg-card:#0c0c0e; --bg-soft:#17171a; --bg-elev:#141418;
+  --tx-1:#f3f3f1; --tx-2:#bcbbb4; --tx-3:#8b8a83;
+  --bd-1:rgba(255,255,255,.11); --bd-2:rgba(255,255,255,.20);
+  --info-bg:rgba(55,138,221,.20); --info-tx:#90bdf0;
+  --danger-bg:rgba(226,75,74,.20); --danger-tx:#f3a1a1;
+  --warn-bg:rgba(239,159,39,.20); --warn-tx:#f7ce82;
+  --ok-bg:rgba(99,153,34,.22); --ok-tx:#a0cb64;
+  --red:#e24b4a; --blue:#5ba0e8;
+  --glow:rgba(91,160,232,.05);
+  --shadow-sm:0 1px 2px rgba(0,0,0,.7),0 2px 10px rgba(0,0,0,.55);
+  --shadow-md:0 8px 22px rgba(0,0,0,.75),0 20px 48px rgba(0,0,0,.6);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg-page:#000000; --bg-card:#0c0c0e; --bg-soft:#17171a; --bg-elev:#141418;
+    --tx-1:#f3f3f1; --tx-2:#bcbbb4; --tx-3:#8b8a83;
+    --bd-1:rgba(255,255,255,.11); --bd-2:rgba(255,255,255,.20);
+    --info-bg:rgba(55,138,221,.20); --info-tx:#90bdf0;
+    --danger-bg:rgba(226,75,74,.20); --danger-tx:#f3a1a1;
+    --warn-bg:rgba(239,159,39,.20); --warn-tx:#f7ce82;
+    --ok-bg:rgba(99,153,34,.22); --ok-tx:#a0cb64;
+    --red:#e24b4a; --blue:#5ba0e8;
+    --glow:rgba(91,160,232,.05);
+    --shadow-sm:0 1px 2px rgba(0,0,0,.7),0 2px 10px rgba(0,0,0,.55);
+    --shadow-md:0 8px 22px rgba(0,0,0,.75),0 20px 48px rgba(0,0,0,.6);
+  }
+}
+*{box-sizing:border-box}
+body{margin:0;color:var(--tx-1);
+  background:radial-gradient(1000px 520px at 50% -160px,var(--glow),transparent 70%),var(--bg-page);
+  background-attachment:fixed;
+  font-family:Inter,system-ui,-apple-system,sans-serif;font-size:15px;line-height:1.5;
+  -webkit-font-smoothing:antialiased}
+.wrap{max-width:1040px;margin:0 auto;padding:0 18px 60px}
+@keyframes rise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ---------- APP BAR ---------- */
+.appbar{position:sticky;top:0;z-index:50;display:flex;align-items:center;gap:14px;
+  padding:14px 0 13px;margin-bottom:18px;
+  background:color-mix(in srgb,var(--bg-page) 86%,transparent);
+  -webkit-backdrop-filter:saturate(160%) blur(14px);backdrop-filter:saturate(160%) blur(14px);
+  border-bottom:.5px solid var(--bd-1)}
+.logo{display:flex;align-items:center;background:#fff;
+  border:.5px solid rgba(0,0,0,.06);border-radius:var(--r-md);
+  padding:7px 13px;flex-shrink:0;box-shadow:var(--shadow-sm)}
+.logo img{height:42px;width:auto;display:block}
+.brand{flex:1;min-width:0}
+.brand h1{margin:0;font-size:18px;font-weight:700;letter-spacing:-.3px;line-height:1.15;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.brand p{margin:1px 0 0;font-size:12px;color:var(--tx-3);font-weight:500}
+.appbar-actions{display:flex;align-items:center;gap:9px;flex-shrink:0}
+.pill{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:var(--tx-2);
+  background:var(--bg-card);border:.5px solid var(--bd-1);border-radius:var(--r-pill);
+  padding:6px 12px;white-space:nowrap;box-shadow:var(--shadow-sm)}
+.pill .dot{width:7px;height:7px;border-radius:50%;background:var(--tx-3)}
+.pill.live .dot{background:#37b24d;box-shadow:0 0 0 3px rgba(55,178,77,.18)}
+.pill.sample .dot{background:#e24b4a;box-shadow:0 0 0 3px rgba(226,75,74,.18)}
+
+/* ---------- BUTTONS ---------- */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;
+  font-family:inherit;font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap;
+  border:.5px solid var(--bd-1);border-radius:var(--r-md);padding:9px 15px;
+  background:var(--bg-card);color:var(--tx-1);box-shadow:var(--shadow-sm);transition:.16s}
+.btn:hover{border-color:var(--bd-2);transform:translateY(-1px);box-shadow:var(--shadow-md)}
+.btn i{font-size:16px}
+.btn-primary{background:var(--blue);color:#fff;border-color:transparent;
+  box-shadow:0 4px 14px -4px rgba(55,138,221,.55)}
+.btn-primary:hover{filter:brightness(1.05)}
+.btn-ico{padding:9px;width:38px;height:38px}
+.btn-danger:hover{border-color:var(--danger-tx);color:var(--danger-tx)}
+.btn.hide{display:none}
+
+/* ---------- HERO / UPLOAD ---------- */
+.crumb{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--tx-2);flex-wrap:wrap;margin-bottom:14px}
+.crumb .now{color:var(--tx-1);font-weight:600}
+.drop{position:relative;border:1.5px dashed var(--bd-2);border-radius:var(--r-lg);padding:26px 18px;text-align:center;
+  cursor:pointer;background:var(--bg-card);transition:.2s;box-shadow:var(--shadow-sm)}
+.drop:hover{border-color:var(--info-tx);transform:translateY(-1px);box-shadow:var(--shadow-md)}
+.drop.over{border-color:var(--info-tx);background:var(--info-bg)}
+.drop .dropico{width:54px;height:54px;margin:0 auto;border-radius:14px;display:flex;align-items:center;justify-content:center;
+  background:var(--info-bg);color:var(--info-tx)}
+.drop .dropico i{font-size:28px}
+.drop p{margin:9px 0 0;font-size:14px;color:var(--tx-2)}
+.drop .small{font-size:12px;color:var(--tx-3);max-width:560px;margin-left:auto;margin-right:auto}
+.chips{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:14px}
+.chip{display:inline-flex;align-items:center;gap:6px;font-size:12px;padding:6px 12px;
+  border-radius:var(--r-pill);background:var(--bg-soft);color:var(--tx-3);transition:.18s;font-weight:600;border:.5px solid transparent}
+.chip.ok{background:var(--ok-bg);color:var(--ok-tx)}
+.chip.err{background:var(--danger-bg);color:var(--danger-tx)}
+.chip .spin{animation:spin .8s linear infinite}
+.hero-actions{display:flex;gap:9px;justify-content:center;flex-wrap:wrap;margin-top:14px}
+
+/* ---------- TABS ---------- */
+.tabs{display:flex;gap:8px;flex-wrap:wrap;margin:22px 0 2px}
+.tab{display:inline-flex;align-items:center;gap:7px;padding:10px 16px;border:.5px solid var(--bd-1);
+  background:var(--bg-card);border-radius:var(--r-pill);font-size:13px;font-weight:600;font-family:inherit;
+  cursor:pointer;color:var(--tx-2);transition:.18s;box-shadow:var(--shadow-sm)}
+.tab:hover{color:var(--tx-1);border-color:var(--bd-2);transform:translateY(-1px)}
+.tab.on{background:var(--blue);color:#fff;border-color:transparent;box-shadow:0 4px 14px -3px rgba(55,138,221,.5)}
+.tab.on i{color:#fff}
+.tab i{font-size:16px}
+
+/* ---------- CARDS ---------- */
+.card{background:var(--bg-card);border:.5px solid var(--bd-1);border-radius:var(--r-lg);
+  padding:18px 22px;margin-top:16px;box-shadow:var(--shadow-sm);transition:box-shadow .2s ease;animation:rise .45s ease both}
+.card:hover{box-shadow:var(--shadow-md)}
+.card h2{margin:0;font-size:15px;font-weight:700;letter-spacing:-.1px;display:flex;align-items:center;gap:8px}
+.card h2 .hico{color:var(--tx-3);font-size:17px}
+.sub{margin:3px 0 0;font-size:12px;color:var(--tx-3)}
+.cardhd{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px}
+
+/* ---------- KPI ---------- */
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(212px,1fr));gap:13px;margin-top:16px}
+.metric{display:flex;align-items:center;gap:13px;border:.5px solid var(--bd-1);border-radius:var(--r-md);
+  padding:15px 16px;background:linear-gradient(155deg,var(--bg-card),var(--bg-elev));
+  transition:transform .16s ease,box-shadow .16s ease,border-color .16s}
+.metric:hover{transform:translateY(-3px);box-shadow:var(--shadow-sm);border-color:var(--bd-2)}
+.micon{width:42px;height:42px;flex-shrink:0;border-radius:11px;display:flex;align-items:center;justify-content:center;
+  background:var(--info-bg);color:var(--info-tx)}
+.micon i{font-size:21px}
+.micon.danger{background:var(--danger-bg);color:var(--danger-tx)}
+.micon.warn{background:var(--warn-bg);color:var(--warn-tx)}
+.micon.ok{background:var(--ok-bg);color:var(--ok-tx)}
+.mtext{min-width:0}
+.metric .k{margin:0;font-size:12.5px;color:var(--tx-2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:500}
+.metric .v{margin:3px 0 0;font-size:23px;font-weight:700;letter-spacing:-.5px;line-height:1.1}
+.metric .u{font-size:12.5px;color:var(--tx-3);font-weight:500;letter-spacing:0}
+
+/* ---------- TOGGLE GROUP ---------- */
+.tgs{display:flex;gap:6px;background:var(--bg-soft);padding:3px;border-radius:var(--r-pill);border:.5px solid var(--bd-1)}
+.tg{padding:6px 13px;border:none;background:transparent;border-radius:var(--r-pill);
+  font-size:12.5px;font-family:inherit;font-weight:600;cursor:pointer;color:var(--tx-2);transition:.16s}
+.tg:hover{color:var(--tx-1)}
+.tg.on{background:var(--bg-card);color:var(--info-tx);box-shadow:var(--shadow-sm)}
+
+/* ---------- BARS ---------- */
+.brow{display:flex;align-items:center;gap:12px;margin:3px 0;padding:6px 8px;border-radius:10px;transition:background .15s}
+.brow:hover{background:var(--bg-soft)}
+.blab{width:168px;font-size:13px;color:var(--tx-2);flex-shrink:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:500}
+.btrk{flex:1;background:var(--bg-soft);border-radius:var(--r-pill);height:22px;box-shadow:inset 0 1px 2px rgba(0,0,0,.06);position:relative;overflow:hidden}
+.bfil{height:100%;border-radius:var(--r-pill);box-shadow:inset 0 1px 0 rgba(255,255,255,.4),inset 0 -2px 4px rgba(0,0,0,.1);transition:width .6s cubic-bezier(.4,0,.2,1)}
+.bval{width:74px;font-size:13px;text-align:right;flex-shrink:0;font-weight:700}
+.bval2{width:88px;flex-shrink:0;display:flex;flex-direction:column;align-items:flex-end;line-height:1.25}
+.bval2 span:first-child{font-size:13px;font-weight:700}
+.bval2 .bsmall{font-size:11px;color:var(--tx-3);font-weight:500}
+
+/* ---------- MONTH CHART ---------- */
+.month{display:flex;align-items:flex-end;gap:8px;height:148px;margin-top:10px;padding-top:14px}
+.mcol{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;min-width:0}
+.mcol .mv{font-size:11px;color:var(--tx-2);font-weight:600;margin-bottom:3px}
+.mcol .mb{width:100%;max-width:38px;background:linear-gradient(180deg,#ff7170,#e0413f);border-radius:6px 6px 0 0;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.35),0 2px 6px rgba(226,75,74,.22);transition:height .6s cubic-bezier(.4,0,.2,1)}
+.mcol .ml{font-size:11px;color:var(--tx-3);margin-top:6px;font-weight:600}
+
+/* ---------- LIST ROWS ---------- */
+.lirow{display:flex;align-items:center;justify-content:space-between;padding:11px 6px;border-bottom:.5px solid var(--bd-1);gap:10px;border-radius:8px;transition:background .15s}
+.lirow:hover{background:var(--bg-soft)}
+.lirow:last-child{border-bottom:none}
+.litxt{min-width:0}
+.litxt .a{font-size:14px;display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:500}
+.litxt .b{font-size:12px;color:var(--tx-3)}
+.tag{font-size:12px;padding:4px 10px;border-radius:var(--r-pill);white-space:nowrap;font-weight:600}
+.intv{font-size:11px;padding:3px 9px;border-radius:var(--r-pill);background:var(--bg-soft);color:var(--tx-2);white-space:nowrap;font-weight:600}
+.riteflex{display:flex;align-items:center;gap:8px;flex-shrink:0}
+
+/* ---------- MISC ---------- */
+.hide{display:none}
+.foot{margin-top:26px;font-size:12px;color:var(--tx-3);text-align:center}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)}
+.empty{padding:38px 14px;text-align:center;color:var(--tx-3)}
+.empty .eico{width:46px;height:46px;margin:0 auto 10px;border-radius:12px;display:flex;align-items:center;justify-content:center;background:var(--bg-soft);color:var(--tx-3)}
+.empty .eico i{font-size:24px}
+.empty p{margin:0;font-size:13px}
+.empty .ehint{margin-top:4px;font-size:12px;opacity:.8}
+.searchbox{display:flex;align-items:center;gap:8px;margin-top:12px;border:.5px solid var(--bd-1);
+  border-radius:var(--r-md);padding:9px 12px;background:var(--bg-soft);transition:.18s}
+.searchbox:focus-within{border-color:var(--blue);box-shadow:0 0 0 3px rgba(55,138,221,.12)}
+.searchbox i{font-size:16px;color:var(--tx-3)}
+.searchbox input{border:0;outline:0;background:transparent;color:var(--tx-1);font-family:inherit;font-size:13px;width:100%}
+.searchbox input::placeholder{color:var(--tx-3)}
+.collapsebtn{display:inline-flex;align-items:center;justify-content:center;border:.5px solid var(--bd-1);background:transparent;
+  color:var(--tx-2);border-radius:var(--r-sm);font-family:inherit;cursor:pointer;width:26px;height:26px;transition:.16s;flex-shrink:0}
+.collapsebtn:hover{border-color:var(--bd-2);color:var(--tx-1);background:var(--bg-soft)}
+.collapsebtn i{font-size:16px;transition:transform .18s}
+.collapsed .collapsebtn i{transform:rotate(-90deg)}
+.collapsed .cbody{display:none}
+.scrollwrap{max-height:380px;overflow-y:auto;margin-right:-6px;padding-right:6px}
+.scrollwrap::-webkit-scrollbar{width:8px}
+.scrollwrap::-webkit-scrollbar-thumb{background:var(--bd-2);border-radius:99px}
+.scrollwrap::-webkit-scrollbar-track{background:transparent}
+.cnt{font-size:12px;color:var(--tx-3);margin-top:8px}
+
+/* ---------- TOAST ---------- */
+.toasts{position:fixed;right:18px;bottom:18px;z-index:100;display:flex;flex-direction:column;gap:9px;max-width:340px}
+.toast{display:flex;align-items:center;gap:10px;padding:12px 14px;border-radius:var(--r-md);
+  background:var(--bg-card);border:.5px solid var(--bd-1);box-shadow:var(--shadow-md);
+  font-size:13px;font-weight:500;animation:rise .3s ease both}
+.toast i{font-size:18px;flex-shrink:0}
+.toast.ok i{color:var(--ok-tx)} .toast.err i{color:var(--danger-tx)} .toast.info i{color:var(--info-tx)}
+
+.exportwrap{position:relative}
+.menu{position:absolute;right:0;top:calc(100% + 6px);min-width:210px;background:var(--bg-card);
+  border:.5px solid var(--bd-1);border-radius:var(--r-md);box-shadow:var(--shadow-md);padding:5px;display:none;z-index:60}
+.exportwrap.open .menu{display:block;animation:rise .18s ease both}
+.menu-item{display:flex;align-items:center;gap:10px;width:100%;text-align:left;background:transparent;border:none;
+  font-family:inherit;font-size:13px;font-weight:500;color:var(--tx-1);padding:9px 11px;border-radius:var(--r-sm);cursor:pointer}
+.menu-item:hover{background:var(--bg-soft)}
+.menu-item i{font-size:18px;color:var(--tx-2)}
+body.exporting .exportwrap,body.exporting .themebtn,body.exporting .drop,body.exporting .tabs,body.exporting .hero-actions,body.exporting .searchbox,body.exporting .collapsebtn,body.exporting .toasts{display:none!important}
+body.exporting .hide{display:block!important}
+body.exporting .collapsed .cbody{display:block!important}
+body.exporting .scrollwrap{max-height:none;overflow:visible}
+body.exporting{background:#fff!important}
+body.exporting .appbar{position:static!important;background:#fff!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important;border-bottom-color:#ddd}
+
+#card-filter{position:relative;z-index:40;overflow:visible}
+.filterbar{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px;position:relative;z-index:41}
+.fdrop{position:relative}
+.fbtn{display:inline-flex;align-items:center;gap:7px;border:.5px solid var(--bd-1);background:var(--bg-card);
+  border-radius:var(--r-md);padding:8px 12px;font-family:inherit;font-size:12.5px;font-weight:600;color:var(--tx-1);
+  cursor:pointer;box-shadow:var(--shadow-sm);transition:.16s}
+.fbtn:hover{border-color:var(--bd-2)}
+.fbtn.active{border-color:var(--info-tx);color:var(--info-tx);background:var(--info-bg)}
+.fbtn .cap{color:var(--tx-3);font-weight:500}
+.fbtn.active .cap{color:var(--info-tx)}
+.fmenu{position:absolute;left:0;top:calc(100% + 6px);width:320px;max-width:88vw;
+  background:var(--bg-card);border:.5px solid var(--bd-1);border-radius:var(--r-md);
+  box-shadow:var(--shadow-md);padding:8px;display:none;z-index:70}
+.fdrop.open .fmenu{display:flex;flex-direction:column;animation:rise .16s ease both}
+.fmenu.up{top:auto;bottom:calc(100% + 6px)}
+.fmenu.right{left:auto;right:0}
+.fhead{flex-shrink:0}
+.flist{overflow-y:auto;overscroll-behavior:contain;max-height:300px;margin-top:2px}
+.flist::-webkit-scrollbar{width:8px}
+.flist::-webkit-scrollbar-thumb{background:var(--bd-2);border-radius:99px}
+.flist::-webkit-scrollbar-track{background:transparent}
+.ffoot{flex-shrink:0;display:flex;align-items:center;justify-content:space-between;gap:8px;
+  border-top:.5px solid var(--bd-1);margin-top:6px;padding-top:7px;font-size:11px;color:var(--tx-3)}
+.fmini{border:.5px solid var(--bd-1);background:transparent;border-radius:var(--r-sm);
+  font-family:inherit;font-size:11px;font-weight:600;color:var(--tx-2);padding:4px 8px;cursor:pointer;margin-left:4px}
+.fmini:hover{border-color:var(--bd-2);color:var(--tx-1);background:var(--bg-soft)}
+.fsearch{width:100%;border:.5px solid var(--bd-1);border-radius:var(--r-sm);padding:7px 9px;
+  font-family:inherit;font-size:12.5px;background:var(--bg-soft);color:var(--tx-1);margin-bottom:6px;outline:none}
+.fsearch:focus{border-color:var(--blue)}
+.fopt{display:flex;align-items:center;gap:8px;padding:6px 7px;border-radius:var(--r-sm);cursor:pointer;font-size:12.5px}
+.fopt:hover{background:var(--bg-soft)}
+.fopt input{accent-color:var(--blue);width:15px;height:15px;flex-shrink:0;cursor:pointer}
+.fopt .nm{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.fopt .ct{color:var(--tx-3);font-size:11px;font-variant-numeric:tabular-nums;flex-shrink:0}
+.fopt.all{border-bottom:.5px solid var(--bd-1);margin-bottom:4px;font-weight:700}
+.durbox{display:flex;align-items:center;gap:8px;margin-top:12px;font-size:12.5px;color:var(--tx-2);flex-wrap:wrap}
+.durbox input{width:96px;border:.5px solid var(--bd-1);border-radius:var(--r-sm);padding:7px 9px;
+  font-family:inherit;font-size:12.5px;background:var(--bg-soft);color:var(--tx-1);outline:none}
+.durbox input:focus{border-color:var(--blue)}
+.dims{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
+.dim{padding:6px 12px;border:.5px solid var(--bd-1);background:transparent;border-radius:var(--r-pill);
+  font-size:12.5px;font-family:inherit;font-weight:600;cursor:pointer;color:var(--tx-2);transition:.16s}
+.dim:hover{border-color:var(--bd-2);color:var(--tx-1)}
+.dim.on{background:var(--info-bg);color:var(--info-tx);border-color:var(--info-tx)}
+.dtable{width:100%;border-collapse:collapse;font-size:12.5px;margin-top:10px}
+.dtable th{text-align:left;font-weight:700;color:var(--tx-2);padding:8px;border-bottom:.5px solid var(--bd-2);
+  white-space:nowrap;position:sticky;top:0;background:var(--bg-card);z-index:2}
+.dtable td{padding:8px;border-bottom:.5px solid var(--bd-1);vertical-align:top;color:var(--tx-1)}
+.dtable tr:hover td{background:var(--bg-soft)}
+.dtable .num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap;font-weight:600}
+.dtable .ell{max-width:250px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.badge{font-size:11px;padding:2px 8px;border-radius:var(--r-pill);background:var(--bg-soft);color:var(--tx-2);
+  white-space:nowrap;font-weight:600;display:inline-block}
+.badge.bkd{background:var(--danger-bg);color:var(--danger-tx)}
+
+.pmwrap{margin-top:4px}
+.pmtop{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px;margin-bottom:6px}
+.pmlegend{display:flex;gap:16px;align-items:center;font-size:12px;color:var(--tx-2);flex-wrap:wrap}
+.pmlegend .sw{display:inline-flex;align-items:center;gap:6px}
+.dotY{width:12px;height:12px;border-radius:50%;background:#e8a93c;box-shadow:inset 0 1px 0 rgba(255,255,255,.4)}
+.triR{width:0;height:0;border-left:7px solid transparent;border-right:7px solid transparent;border-bottom:12px solid #e2574c}
+.pmboard{overflow-x:auto;-webkit-overflow-scrolling:touch;border:.5px solid var(--bd-1);border-radius:var(--r-md)}
+table.pmcal{width:100%;border-collapse:collapse;font-size:12px;min-width:820px}
+table.pmcal th.mon{padding:8px 4px;color:var(--blue);font-weight:700;text-align:center;border-bottom:.5px solid var(--bd-1)}
+table.pmcal td.wk,table.pmcal th.cn{position:sticky;left:0;background:var(--bg-card);z-index:1}
+table.pmcal td.wk{padding:4px 10px;color:var(--blue);font-weight:700;text-align:center;border-right:.5px solid var(--bd-1);white-space:nowrap}
+table.pmcal td.cel{height:66px;vertical-align:top;padding:5px;cursor:pointer;border:1px solid var(--bd-1);transition:background .12s}
+table.pmcal td.cel:hover{background:var(--bg-soft)}
+table.pmcal td.cel.mt{cursor:default}
+table.pmcal td.cel.mt:hover{background:transparent}
+.celtop{display:flex;align-items:flex-start;justify-content:space-between;gap:4px}
+.celn{font-size:10px;color:var(--tx-3);flex-shrink:0}
+.mgrid{display:flex;flex-wrap:wrap;gap:3px;max-width:88px}
+.mk{width:11px;height:11px;flex-shrink:0;display:block}
+.mk.p{border-radius:50%;background:#e8a93c}
+.mk.b{width:0;height:0;background:transparent;border-left:6px solid transparent;border-right:6px solid transparent;border-bottom:11px solid #e2574c}
+table.pmcal tr.sig td{background:var(--bg-soft);text-align:center;font-size:10px;color:var(--tx-3);padding:4px 0}
+table.pmcal tr.sig td.cn{color:var(--tx-3);font-weight:700}
+.pmhint{font-size:11px;color:var(--tx-3);margin-top:8px}
+.mtag{font-size:11px;padding:2px 9px;border-radius:var(--r-pill);white-space:nowrap;font-weight:600}
+.mtag.p{background:rgba(232,169,60,.16);color:#8a5a12}
+.mtag.b{background:var(--danger-bg);color:var(--danger-tx)}
+:root[data-theme="dark"] .mtag.p{color:#f0c063}
+.eqbox{aspect-ratio:1/1;display:flex;align-items:center;justify-content:center;border-radius:8px;font-size:12px;font-weight:600;border:.5px solid var(--bd-1);background:var(--bg-soft);color:var(--tx-3);user-select:none;position:relative}
+.eqbox.on{cursor:pointer;color:#fff;border-color:transparent;transition:transform .1s}
+.eqbox.on:hover{transform:scale(1.08)}
+.eqbox.on.p{background:#e8a93c}
+.eqbox.on.b{background:#e2574c}
+.eqbox.on.pb{background:linear-gradient(135deg,#e8a93c 0 50%,#e2574c 50% 100%)}
+.eqgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(46px,1fr));gap:6px}
+.pm-modal-legend{display:flex;gap:16px;font-size:12px;color:var(--tx-2);margin-bottom:10px;flex-wrap:wrap}
+.pm-modal-legend .sw{display:inline-flex;align-items:center;gap:6px}
+
+@media (max-width:680px){
+  .brand p{display:none}
+  .blab{width:120px}
+  .appbar-actions .lbl{display:none}
+}
+
+/* ---------- PRINT ---------- */
+@media print{
+  :root{--bg-page:#fff;--bg-card:#fff;--bg-soft:#f4f4f4;--bg-elev:#fff;--tx-1:#000;--tx-2:#333;--tx-3:#666;--bd-1:#ddd;--bd-2:#bbb}
+  body{background:#fff}
+  .appbar{position:static;backdrop-filter:none}
+  .drop,.tabs,.themebtn,.collapsebtn,.searchbox,.no-print,.appbar-actions .btn,.hero-actions{display:none!important}
+  .hide{display:block!important}
+  .collapsed .cbody{display:block!important}
+  .scrollwrap{max-height:none;overflow:visible}
+  .card,.metric{box-shadow:none;break-inside:avoid}
+  .tabs{display:none}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1 class="sr">Dashboard maintenance dan reliability — upload file Excel untuk menghitung otomatis</h1>
+
+  <!-- ============ APP BAR ============ -->
+  <header class="appbar">
+    <div class="logo"><img src="logo-MU-new-hires-01.webp" alt="MU Mortar Utama — Saint-Gobain"
+      onerror="this.parentElement.style.display='none'"></div>
+    <div class="brand">
+      <h1>PT. Cipta Mortar Utama</h1>
+      <p>Maintenance &amp; Reliability Dashboard</p>
+    </div>
+    <div class="appbar-actions">
+      <span class="pill" id="periodPill"><span class="dot"></span> Belum ada data</span>
+      <div class="exportwrap hide" id="exportWrap">
+        <button class="btn" id="btnExport"><i class="ti ti-download"></i><span class="lbl">Ekspor</span><i class="ti ti-chevron-down" style="font-size:14px"></i></button>
+        <div class="menu" id="exportMenu">
+          <button class="menu-item" id="optPDF"><i class="ti ti-file-type-pdf"></i> Simpan sebagai PDF</button>
+          <button class="menu-item" id="optPrint"><i class="ti ti-printer"></i> Cetak</button>
+        </div>
+      </div>
+      <button class="themebtn btn btn-ico" id="themeBtn" aria-label="Ganti tema terang/gelap"><i class="ti ti-moon"></i></button>
+    </div>
+  </header>
+
+  <!-- ============ UPLOAD ZONE ============ -->
+  <div class="drop" id="drop">
+    <div class="dropico"><i class="ti ti-file-spreadsheet"></i></div>
+    <p><b>Klik atau tarik file Excel ke sini</b> (boleh sekaligus tiga)</p>
+    <p class="small">data downtime · sparepart usage · stok sparepart — jenis file dikenali otomatis dari isinya.
+      Semua diproses di browser, tidak dikirim ke server.</p>
+    <div class="chips">
+      <span class="chip" id="chip-dt"><i class="ti ti-circle-dashed"></i> Downtime</span>
+      <span class="chip" id="chip-us"><i class="ti ti-circle-dashed"></i> Sparepart usage</span>
+      <span class="chip" id="chip-st"><i class="ti ti-circle-dashed"></i> Stok sparepart</span>
+      <span class="chip" id="chip-pm"><i class="ti ti-circle-dashed"></i> PM Monitoring</span>
+    </div>
+    <input type="file" id="fileIn" accept=".xlsx,.xls" multiple style="display:none">
+  </div>
+  <div class="hero-actions">
+    <button class="btn btn-primary" id="btnSample"><i class="ti ti-sparkles"></i> Lihat contoh data</button>
+    <button class="btn btn-danger hide" id="btnReset"><i class="ti ti-trash"></i> Hapus data</button>
+  </div>
+
+  <div class="crumb" id="crumb" style="margin-top:18px;display:none">
+    <i class="ti ti-stack-2" style="font-size:16px"></i>
+    <span class="now" id="crumbLine">Semua Line</span>
+    <i class="ti ti-chevron-right" style="font-size:14px"></i><span id="crumbInfo">&mdash;</span>
+  </div>
+
+  <div class="tabs">
+    <button class="tab on" data-p="bd"><i class="ti ti-chart-bar"></i>BREAKDOWN MAP</button>
+    <button class="tab" data-p="sp"><i class="ti ti-packages"></i>SPAREPARTS USAGE</button>
+    <button class="tab" data-p="pm"><i class="ti ti-calendar-clock"></i>PREVENTIVE MAINTENANCE</button>
+  </div>
+
+  <!-- ================= BREAKDOWN ================= -->
+  <div id="panel-bd">
+
+    <div class="card" id="card-filter">
+      <div class="cardhd">
+        <div><h2><i class="ti ti-filter hico"></i> Filter data</h2><p class="sub" id="filterSub">semua baris ditampilkan</p></div>
+        <button class="btn" id="btnResetFilter"><i class="ti ti-filter-off"></i> Reset filter</button>
+      </div>
+      <div class="filterbar" id="filterBar"><div class="empty" style="padding:16px 10px"><p>Upload file Excel atau klik &ldquo;Lihat contoh data&rdquo; untuk memunculkan filter.</p></div></div>
+      <div class="durbox">
+        <i class="ti ti-clock-hour-4" style="font-size:16px;color:var(--tx-3)"></i>
+        <span><b>Duration (menit)</b> antara</span>
+        <input id="durMin" type="number" min="0" step="any" placeholder="min" autocomplete="off">
+        <span>&ndash;</span>
+        <input id="durMax" type="number" min="0" step="any" placeholder="maks" autocomplete="off">
+        <span id="durInfo" style="color:var(--tx-3)"></span>
+      </div>
+    </div>
+
+    <div class="grid" id="bdKpi"></div>
+
+    <div class="card">
+      <h2><i class="ti ti-git-branch hico"></i> Ringkasan per Line</h2>
+      <p class="sub">Total downtime &amp; jumlah kejadian breakdown untuk tiap Line pada data terfilter</p>
+      <div id="lineWrap"><div class="empty"><div class="eico"><i class="ti ti-git-branch"></i></div><p>Belum ada data.</p></div></div>
+    </div>
+
+    <div class="card">
+      <h2><i class="ti ti-chart-histogram hico"></i> Tren downtime per bulan</h2>
+      <p class="sub" id="monthSub">menit per bulan</p>
+      <div id="monthWrap"><div class="empty"><div class="eico"><i class="ti ti-chart-bar-off"></i></div><p>Belum ada data downtime</p><p class="ehint">Upload file atau klik &ldquo;Lihat contoh data&rdquo;.</p></div></div>
+    </div>
+
+    <div class="card collapsible" id="card-bd">
+      <div class="cardhd">
+        <div><h2><button class="collapsebtn" data-collapse="card-bd"><i class="ti ti-chevron-down"></i></button> Analisis downtime</h2><p class="sub" id="bdSub">pilih dimensi di bawah</p></div>
+      </div>
+      <div class="cbody">
+        <div class="dims" id="bdDims"></div>
+        <div class="scrollwrap"><div id="bdChart" style="margin-top:12px"><div class="empty"><div class="eico"><i class="ti ti-list-search"></i></div><p>Belum ada data.</p></div></div></div>
+      </div>
+    </div>
+
+    <div class="card collapsible" id="card-detail">
+      <div class="cardhd">
+        <div><h2><button class="collapsebtn" data-collapse="card-detail"><i class="ti ti-table"></i></button> Detail kejadian</h2><p class="sub">Description, Equipment, Duration &amp; BKD &mdash; persis baris di Excel</p></div>
+      </div>
+      <div class="cbody">
+        <div class="searchbox"><i class="ti ti-search"></i><input id="dtSearch" placeholder="Cari description / equipment / kategori&hellip;" autocomplete="off"></div>
+        <div class="scrollwrap" style="max-height:470px"><div id="dtTable"><div class="empty"><div class="eico"><i class="ti ti-table-off"></i></div><p>Belum ada data.</p></div></div></div>
+        <p class="cnt" id="dtCnt"></p>
+      </div>
+    </div>
+
+    <div class="card collapsible" id="card-pm">
+      <div class="cardhd">
+        <div><h2><button class="collapsebtn" data-collapse="card-pm"><i class="ti ti-calendar-event"></i></button> Calendar PM Monitoring</h2>
+        <p class="sub" id="pmSub">jadwal PM (Proses) &amp; kejadian Breakdown per minggu &mdash; klik sel untuk detail</p></div>
+        <div class="tgs">
+          <button class="tg on" data-pmv="all">Semua</button>
+          <button class="tg" data-pmv="p">Proses</button>
+          <button class="tg" data-pmv="b">Breakdown</button>
+        </div>
+      </div>
+      <div class="cbody">
+        <div class="pmwrap">
+          <div class="pmtop">
+            <div class="searchbox" style="margin-top:0;flex:1;min-width:220px"><i class="ti ti-search"></i><input id="pmSearch" placeholder="Cari equipment / component / action / PIC / description\u2026" autocomplete="off"></div>
+            <div class="pmlegend">
+              <span class="sw"><span class="dotY"></span> Proses (PM)</span>
+              <span class="sw"><span class="triR"></span> Breakdown</span>
+            </div>
+          </div>
+          <div class="pmboard"><table class="pmcal" id="pmCal"></table></div>
+          <p class="pmhint" id="pmHint">Warna kuning bulat = jadwal PM (dari PM_Monitoring). Segitiga merah = kejadian breakdown (dari data downtime).</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="card collapsible" id="card-flow">
+      <h2><button class="collapsebtn" data-collapse="card-flow"><i class="ti ti-chevron-down"></i></button> Flow Map Production </h2>
+      <p class="sub">Line Dry Mortar — dari Sand Dryer sampai produk jadi (CBT-1 &amp; CBT-2) · diagram referensi</p>
+      <div class="cbody">
+        <div style="overflow-x:auto;margin-top:14px">
+<svg viewBox="0 0 700 660" width="100%" style="min-width:600px;height:auto;display:block" xmlns="http://www.w3.org/2000/svg" font-family="Inter, sans-serif">
+  <defs><marker id="ar" markerUnits="userSpaceOnUse" markerWidth="11" markerHeight="11" refX="5" refY="5" orient="auto"><path d="M0,0 L9,5 L0,10 Z" fill="#9aa3af"/></marker></defs>
+  <path d="M350,76 L350,120" fill="none" stroke="#9aa3af" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#ar)"/>
+  <path d="M350,166 L350,196 L146,196 L146,225" fill="none" stroke="#9aa3af" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#ar)"/>
+  <path d="M350,166 L350,196 L554,196 L554,225" fill="none" stroke="#9aa3af" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#ar)"/>
+  <path d="M146,271 L146,320" fill="none" stroke="#9aa3af" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#ar)"/>
+  <path d="M146,366 L146,415" fill="none" stroke="#9aa3af" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#ar)"/>
+  <path d="M146,461 L146,510" fill="none" stroke="#9aa3af" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#ar)"/>
+  <path d="M146,556 L146,600" fill="none" stroke="#9aa3af" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#ar)"/>
+  <path d="M554,271 L554,320" fill="none" stroke="#9aa3af" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#ar)"/>
+  <path d="M554,366 L554,415" fill="none" stroke="#9aa3af" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#ar)"/>
+  <path d="M554,461 L554,510" fill="none" stroke="#9aa3af" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#ar)"/>
+  <path d="M554,556 L554,600" fill="none" stroke="#9aa3af" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#ar)"/>
+  <rect x="274" y="30" width="152" height="46" rx="10" fill="#5a9e3d" stroke="#4a8232" stroke-width="1"/><text x="350" y="57" text-anchor="middle" font-size="9.8" font-weight="600" fill="#fff" letter-spacing=".2">SAND DRYER</text>
+  <rect x="274" y="120" width="152" height="46" rx="10" fill="#2fa7bf" stroke="#27899d" stroke-width="1"/><text x="350" y="147" text-anchor="middle" font-size="9.8" font-weight="600" fill="#fff" letter-spacing=".2">SIEVING</text>
+  <rect x="70" y="225" width="152" height="46" rx="10" fill="#5577c4" stroke="#4662a1" stroke-width="1"/><text x="146" y="252" text-anchor="middle" font-size="9.8" font-weight="600" fill="#fff" letter-spacing=".2">DOSING SCREW CBT-1</text>
+  <rect x="70" y="320" width="152" height="46" rx="10" fill="#4a86d8" stroke="#3d6eb1" stroke-width="1"/><text x="146" y="347" text-anchor="middle" font-size="9.8" font-weight="600" fill="#fff" letter-spacing=".2">READY MIX</text>
+  <rect x="70" y="415" width="152" height="46" rx="10" fill="#6f6bd6" stroke="#5b58af" stroke-width="1"/><text x="146" y="442" text-anchor="middle" font-size="9.8" font-weight="600" fill="#fff" letter-spacing=".2">MIXER CBT-1</text>
+  <rect x="70" y="510" width="152" height="46" rx="10" fill="#dd8a3c" stroke="#b57131" stroke-width="1"/><text x="146" y="537" text-anchor="middle" font-size="9.8" font-weight="600" fill="#fff" letter-spacing=".2">PACKER</text>
+  <rect x="70" y="600" width="152" height="46" rx="10" fill="#3f6fc4" stroke="#345ba1" stroke-width="1"/><text x="146" y="627" text-anchor="middle" font-size="9.8" font-weight="600" fill="#fff" letter-spacing=".2">PALLETIZER</text>
+  <rect x="478" y="225" width="152" height="46" rx="10" fill="#4a86d8" stroke="#3d6eb1" stroke-width="1"/><text x="554" y="252" text-anchor="middle" font-size="9.8" font-weight="600" fill="#fff" letter-spacing=".2">READY MIX</text>
+  <rect x="478" y="320" width="152" height="46" rx="10" fill="#5577c4" stroke="#4662a1" stroke-width="1"/><text x="554" y="347" text-anchor="middle" font-size="9.8" font-weight="600" fill="#fff" letter-spacing=".2">DOSING SCREW CBT-2</text>
+  <rect x="478" y="415" width="152" height="46" rx="10" fill="#6f6bd6" stroke="#5b58af" stroke-width="1"/><text x="554" y="442" text-anchor="middle" font-size="9.8" font-weight="600" fill="#fff" letter-spacing=".2">MIXER CBT-2</text>
+  <rect x="478" y="510" width="152" height="46" rx="10" fill="#dd8a3c" stroke="#b57131" stroke-width="1"/><text x="554" y="537" text-anchor="middle" font-size="9.8" font-weight="600" fill="#fff" letter-spacing=".2">PACKER CBT-2</text>
+  <rect x="478" y="600" width="152" height="46" rx="10" fill="#3f6fc4" stroke="#345ba1" stroke-width="1"/><text x="554" y="627" text-anchor="middle" font-size="9.8" font-weight="600" fill="#fff" letter-spacing=".2">PALLETIZER</text>
+</svg>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= SPARE PARTS ================= -->
+  <div id="panel-sp" class="hide">
+    <div class="grid" id="spKpi"></div>
+    <div class="card collapsible" id="card-sp">
+      <div class="cardhd">
+        <div><h2><button class="collapsebtn" data-collapse="card-sp"><i class="ti ti-chevron-down"></i></button> Pemakaian sparepart</h2><p class="sub" id="spSub">total unit terpakai</p></div>
+        <div class="tgs"><button class="tg on" data-sp="item">By item</button><button class="tg" data-sp="mesin">By mesin</button></div>
+      </div>
+      <div class="cbody">
+        <div class="searchbox"><i class="ti ti-search"></i><input id="spSearch" placeholder="Cari item / mesin…" autocomplete="off"></div>
+        <div class="scrollwrap"><div id="spChart" style="margin-top:12px"><div class="empty"><div class="eico"><i class="ti ti-package-off"></i></div><p>Upload file sparepart usage.</p></div></div></div>
+        <p class="cnt" id="spCnt"></p>
+      </div>
+    </div>
+    <div class="card collapsible" id="card-st">
+      <h2><button class="collapsebtn" data-collapse="card-st"><i class="ti ti-chevron-down"></i></button> Stok kritis — perlu re-order</h2>
+      <p class="sub">stok on-hand ÷ rata-rata pemakaian bulanan = sisa cover (bulan)</p>
+      <div class="cbody">
+        <div class="searchbox"><i class="ti ti-search"></i><input id="stSearch" placeholder="Cari nama item…" autocomplete="off"></div>
+        <div class="scrollwrap"><div id="stList" style="margin-top:8px"><div class="empty"><div class="eico"><i class="ti ti-building-warehouse"></i></div><p>Butuh file stok + usage untuk menghitung cover.</p></div></div></div>
+        <p class="cnt" id="stCnt"></p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= PM ================= -->
+  <div id="panel-pm" class="hide">
+    <div class="grid" id="pmKpi"></div>
+    <div class="card">
+      <div class="cardhd">
+        <div><h2><i class="ti ti-calendar-stats hico"></i> Jadwal perawatan rutin</h2><p class="sub">interval dari MTBF breakdown — inspeksi lebih rapat agar mendahului kerusakan</p></div>
+        <div class="tgs"><button class="tg on" data-pm="2minggu">Paling rawan</button><button class="tg" data-pm="all">Semua</button></div>
+      </div>
+      <div id="pmList" style="margin-top:8px"><div class="empty"><div class="eico"><i class="ti ti-calendar-off"></i></div><p>Upload file data downtime untuk menyusun jadwal.</p></div></div>
+    </div>
+  </div>
+
+  <p class="foot">Semua angka dihitung di browser dari file yang di-upload · interval PM diturunkan dari MTBF</p>
+</div>
+
+<div class="toasts" id="toasts"></div>
+
+<script>
+/* ================= THEME ================= */
+(function(){
+  var root=document.documentElement, btn=document.getElementById('themeBtn');
+  var mq=window.matchMedia('(prefers-color-scheme: dark)');
+  function effectiveDark(){var t=root.getAttribute('data-theme');
+    return t==='dark'?true:t==='light'?false:mq.matches;}
+  function paintIcon(){btn.innerHTML=effectiveDark()?'<i class="ti ti-sun"></i>':'<i class="ti ti-moon"></i>';}
+  function apply(t){
+    if(t==='light'||t==='dark')root.setAttribute('data-theme',t);
+    else root.removeAttribute('data-theme'); paintIcon();}
+  var saved; try{saved=localStorage.getItem('mu-theme');}catch(e){}
+  apply(saved||'auto');
+  if(mq.addEventListener) mq.addEventListener('change',paintIcon);
+  btn.addEventListener('click',function(){
+    var next=effectiveDark()?'light':'dark'; apply(next);
+    try{localStorage.setItem('mu-theme',next);}catch(e){}});
+})();
+
+/* ================= UTIL ================= */
+var nf=new Intl.NumberFormat('id-ID');
+function el(id){return document.getElementById(id);}
+function css(v){return getComputedStyle(document.documentElement).getPropertyValue(v).trim();}
+function norm(x){return String(x==null?'':x).replace(/\s+/g,' ').trim();}
+function num(x){var v=parseFloat(x);return isNaN(v)?null:v;}
+function stripCode(x){return norm(x).replace(/^[A-Za-z]\d+\./,'').trim();}
+function esc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+
+/* cari baris header: baris pertama (dlm 15 baris awal) yang memuat sel == key */
+function findHeader(rows,key){
+  key=key.toLowerCase();
+  for(var i=0;i<Math.min(15,rows.length);i++){
+    for(var j=0;j<(rows[i]||[]).length;j++)
+      if(norm(rows[i][j]).toLowerCase()===key) return i;
+  }
+  return -1;
+}
+/* ubah sheet jadi array of object berdasar baris header hr */
+function toObjects(rows,hr){
+  var head=rows[hr].map(norm), out=[];
+  for(var i=hr+1;i<rows.length;i++){
+    var r=rows[i]; if(!r||!r.length) continue;
+    var o={},empty=true;
+    for(var j=0;j<head.length;j++){
+      if(!head[j])continue;
+      o[head[j]]=r[j];
+      if(r[j]!=null&&norm(r[j])!=='')empty=false;
+    }
+    if(!empty)out.push(o);
+  }
+  return {head:head,data:out};
+}
+function findCol(head,pred){for(var i=0;i<head.length;i++)if(pred(head[i]))return head[i];return null;}
+
+/* ================= STATE ================= */
+var S={dt:null,us:null,st:null};
+var S_pm=null;   // jadwal PM dari PM_Monitoring
+var pmView='all';
+
+/* ================= PARSER: DOWNTIME (baris mentah, siap difilter) ================= */
+/* Kolom yang dibaca dari sheet (auto-deteksi dari nama header):
+   Month | Date | Packer | Description | Loss Category | Category BKD |
+   Equipment (Untuk kategori Engineering Downtime) | Equipment Detail (...) |
+   Duration (menit) | Line | Equipment (CBT1/CBT2) | BKD                          */
+function parseDowntime(obj){
+  var head=obj.head,data=obj.data;
+  var cMon =findCol(head,function(h){return /^month$/i.test(h);});
+  var cDate=findCol(head,function(h){return /^date$/i.test(h);});
+  var cPack=findCol(head,function(h){return /^packer$/i.test(h);});
+  var cDesc=findCol(head,function(h){return /^description/i.test(h);});
+  var cLoss=findCol(head,function(h){return /^loss\s*category/i.test(h);});
+  var cCat =findCol(head,function(h){return /category\s*bkd/i.test(h);});
+  var cDur =findCol(head,function(h){return /^duration/i.test(h);})
+          ||findCol(head,function(h){return /duration/i.test(h);});
+  var cLine=findCol(head,function(h){return /^line$/i.test(h);});
+  var cBkd =findCol(head,function(h){return /^bkd$/i.test(h);});
+  var cDt2 =findCol(head,function(h){return /date2/i.test(h);})
+          ||findCol(head,function(h){return /^date$/i.test(h);});
+  var cDet =findCol(head,function(h){return /equipment\s*detail/i.test(h);});
+  /* "Equipment (Untuk kategori Engineering Downtime)" */
+  var cEqE =findCol(head,function(h){return /^equipment/i.test(h)&&/engineering/i.test(h);})
+          ||findCol(head,function(h){return /^equipment/i.test(h)&&!/detail/i.test(h)&&h.trim().toLowerCase()!=='equipment';});
+  /* kolom "Equipment" polos (CBT1 / CBT2) */
+  var cEqC =findCol(head,function(h){return /^equipment$/i.test(h);});
+  if(!cDur||!cLoss) return null;
+
+  function v(r,c){var s=norm(c?r[c]:''); return (!s||s.toLowerCase()==='nan')?'':s;}
+  var R=[];
+  data.forEach(function(r){
+    var dur=num(r[cDur]); if(dur==null||dur<0)return;
+    var ls=v(r,cLoss); if(!ls)return;            /* buang baris rekap/total tanpa Loss Category */
+    var isB=/bkd/i.test(ls);
+    var draw=cDt2?r[cDt2]:null, dob=null, yr=null;
+    if(draw instanceof Date){ dob=draw; }
+    else if(typeof draw==='number'){ dob=new Date(Date.UTC(1899,11,30+Math.floor(draw))); }
+    else if(draw){ var pd=new Date(draw); if(!isNaN(pd)) dob=pd; }
+    if(dob) yr=dob.getFullYear();
+    R.push({_d:dob, _yr:yr,
+      mo:v(r,cMon), dt:v(r,cDate),
+      line:v(r,cLine)||'(Kosong)',
+      packer:v(r,cPack)||'(Kosong)',
+      eqc:v(r,cEqC)||'(Kosong)',
+      eqe:v(r,cEqE)||'(Kosong)',
+      det:v(r,cDet)||'(Kosong)',
+      cat:v(r,cCat)||'(Kosong)',
+      loss:ls, desc:v(r,cDesc), dur:dur,
+      bkd:(cBkd?(num(r[cBkd])||0):(isB?dur:0)),
+      isb:isB
+    });
+  });
+  if(!R.length) return null;
+  var yc={},yy=null,yn=0; R.forEach(function(x){if(x._yr){yc[x._yr]=(yc[x._yr]||0)+1;if(yc[x._yr]>yn){yn=yc[x._yr];yy=x._yr;}}});
+  return {raw:R, hasBkd:!!cBkd, rows:R.length, pm:[], year:yy};
+}
+
+/* ================= PARSER: USAGE ================= */
+function parseUsage(obj){
+  var head=obj.head,data=obj.data;
+  var iCol=findCol(head,function(h){return h.toLowerCase()==='item';});
+  var dCol=findCol(head,function(h){return /^description/i.test(h);});
+  var qCol=findCol(head,function(h){return /qty/i.test(h);});
+  var mCol=findCol(head,function(h){return /machine/i.test(h);});
+  if(!iCol||!dCol||!qCol) return null;
+  var qty=0, items=new Set(), rows=0, byItem={}, byMac={}, rate={}, codedQty=0, toolsQty=0;
+  function hasCode(x){return /^[A-Za-z]\d+\./.test(String(x).trim());}
+  function codeName(x){var m=String(x).trim().match(/^[A-Za-z]\d+\.(.*)$/);return m?m[1].trim():'';}
+  data.forEach(function(r){
+    var desc=norm(r[dCol]); if(!desc||desc.toLowerCase()==='nan')return;
+    var q=Math.abs(num(r[qCol])||0);
+    rows++; qty+=q; items.add(desc);
+    byItem[desc]=(byItem[desc]||0)+q;
+    /* by mesin: HANYA baris dgn kode mesin asli (E01., B05., dst) — teks "TOOLS/UNTUK..." dipisah */
+    var mraw=norm(mCol?r[mCol]:'');
+    if(hasCode(mraw)){var nm=codeName(mraw); if(nm){byMac[nm]=(byMac[nm]||0)+q; codedQty+=q;}}
+    else if(/tool/i.test(mraw)) toolsQty+=q;
+    var it=norm(r[iCol]); if(it)rate[it]=(rate[it]||0)+q;
+  });
+  if(!rows)return null;
+  function top(o,n){var a=Object.keys(o).map(function(k){return [k.slice(0,34),Math.round(o[k])];})
+    .sort(function(a,b){return b[1]-a[1];}); return n?a.slice(0,n):a;}
+  return {qty:Math.round(qty),items:items.size,rows:rows,
+    spItem:top(byItem),spMesin:top(byMac),rate:rate,
+    codedQty:Math.round(codedQty),toolsQty:Math.round(toolsQty)};
+}
+
+/* ================= PARSER: STOCK ================= */
+function parseStock(obj){
+  var head=obj.head,data=obj.data;
+  var iCol=findCol(head,function(h){return /^item\s*no/i.test(h);});
+  var nCol=findCol(head,function(h){return /^item\s*name/i.test(h);});
+  var oCol=findCol(head,function(h){return h.toLowerCase()==='on-hand';})
+        ||findCol(head,function(h){return /on-?hand/i.test(h)&&!/status/i.test(h);});
+  if(!iCol||!oCol)return null;
+  var sku={}, units=0;
+  data.forEach(function(r){
+    var it=norm(r[iCol]); if(!it||it.toLowerCase()==='nan')return;
+    var oh=num(r[oCol])||0; units+=oh;
+    if(!sku[it])sku[it]={onhand:0,nama:norm(nCol?r[nCol]:it)};
+    sku[it].onhand+=oh;
+  });
+  var n=Object.keys(sku).length;
+  if(!n)return null;
+  return {sku:n,units:Math.round(units),map:sku};
+}
+
+/* ================= RENDER ================= */
+var RED, BLUE;
+function bars(id,rows,color){
+ var box=el(id);
+ if(!rows||!rows.length){box.innerHTML='<div class="empty"><div class="eico"><i class="ti ti-mood-empty"></i></div><p>Belum ada data.</p></div>';return;}
+ var max=Math.max.apply(null,rows.map(function(r){return r[1]}));
+ box.innerHTML=rows.map(function(r){
+  var w=Math.round(r[1]/max*100);
+  var val;
+  if(r.length>2&&r[2]!=null){
+   /* tampil dua baris: menit + jumlah kejadian */
+   val='<span class="bval2"><span>'+nf.format(r[1])+' mnt</span><span class="bsmall">'+nf.format(r[2])+' kejadian</span></span>';
+  }else{
+   val='<span class="bval">'+nf.format(r[1])+'</span>';
+  }
+  return '<div class="brow"><span class="blab" title="'+r[0]+'">'+r[0]+'</span><div class="btrk"><div class="bfil" data-w="'+w+'" style="width:0;background:'+color+'"></div></div>'+val+'</div>';
+ }).join('');
+ requestAnimationFrame(function(){
+  var fl=box.querySelectorAll('.bfil');
+  for(var i=0;i<fl.length;i++){fl[i].style.width=fl[i].getAttribute('data-w')+'%';}
+ });
+}
+/* tebak ikon + warna KPI dari label */
+function kpiMeta(label){
+ var l=label.toLowerCase();
+ if(/kritis/.test(l)) return{ic:'ti-alert-hexagon',cls:'danger'};
+ if(/breakdown/.test(l)) return{ic:'ti-alert-triangle',cls:'danger'};
+ if(/mttr/.test(l)) return{ic:'ti-tool',cls:'warn'};
+ if(/mtbf|terpendek/.test(l)) return{ic:'ti-clock-check',cls:'ok'};
+ if(/total downtime/.test(l)) return{ic:'ti-clock',cls:''};
+ if(/downtime/.test(l)) return{ic:'ti-stopwatch',cls:''};
+ if(/qty|terpakai/.test(l)) return{ic:'ti-package',cls:''};
+ if(/jenis item|item/.test(l)) return{ic:'ti-versions',cls:'ok'};
+ if(/sku|gudang/.test(l)) return{ic:'ti-building-warehouse',cls:''};
+ if(/terjadwal/.test(l)) return{ic:'ti-calendar-check',cls:'ok'};
+ if(/rapat/.test(l)) return{ic:'ti-calendar-clock',cls:'warn'};
+ if(/bulanan|interval/.test(l)) return{ic:'ti-calendar',cls:''};
+ return{ic:'ti-chart-bar',cls:''};
+}
+function kpi(id,arr){
+ el(id).innerHTML=arr.map(function(k){
+  var m=kpiMeta(k[0]);
+  return '<div class="metric"><div class="micon '+m.cls+'"><i class="ti '+m.ic+'"></i></div>'
+   +'<div class="mtext"><p class="k">'+k[0]+'</p><p class="v">'+k[1]+' <span class="u">'+(k[2]||'')+'</span></p></div></div>';
+ }).join('');
+}
+var bdMode='eqe', spMode='item', pmMode='2minggu';
+
+/* ================= FILTER ENGINE ================= */
+var MO_ORDER=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+var MO_LBL={May:'Mei',Aug:'Agu',Oct:'Okt',Dec:'Des'};
+var FDEF=[{k:'mo',lab:'Bulan'},{k:'line',lab:'Line'},{k:'eqc',lab:'Equipment'},
+ {k:'packer',lab:'Packer'},{k:'eqe',lab:'Equipment (Eng. Downtime)'},{k:'det',lab:'Equipment Detail'},
+ {k:'cat',lab:'Category BKD'},{k:'loss',lab:'Loss Category'}];
+var BD_DIMS=[{k:'eqe',lab:'Equipment (Eng. Downtime)'},{k:'det',lab:'Equipment Detail'},
+ {k:'line',lab:'Line'},{k:'eqc',lab:'Equipment'},{k:'packer',lab:'Packer'},
+ {k:'cat',lab:'Category BKD'},{k:'loss',lab:'Loss Category'},{k:'mo',lab:'Bulan'}];
+var F={}, durMin=null, durMax=null;
+FDEF.forEach(function(f){F[f.k]=null;});          /* null = semua dipilih */
+
+function resetFilters(){
+  FDEF.forEach(function(f){F[f.k]=null;});
+  durMin=null; durMax=null;
+  if(el('durMin'))el('durMin').value='';
+  if(el('durMax'))el('durMax').value='';
+  if(el('dtSearch'))el('dtSearch').value='';
+}
+function universe(k){
+  if(!S.dt)return [];
+  S.dt._uni=S.dt._uni||{};
+  if(S.dt._uni[k])return S.dt._uni[k];
+  var s={}; S.dt.raw.forEach(function(r){s[r[k]]=1;});
+  var a=Object.keys(s);
+  if(k==='mo') a.sort(function(x,y){return MO_ORDER.indexOf(x)-MO_ORDER.indexOf(y);});
+  else a.sort(function(x,y){ if(x==='(Kosong)')return 1; if(y==='(Kosong)')return -1; return x.localeCompare(y,'id'); });
+  S.dt._uni[k]=a; return a;
+}
+function passRow(r,skipKey){
+  for(var i=0;i<FDEF.length;i++){
+    var k=FDEF[i].k; if(k===skipKey)continue;
+    var sel=F[k]; if(sel&&!sel[r[k]])return false;
+  }
+  if(durMin!=null&&r.dur<durMin)return false;
+  if(durMax!=null&&r.dur>durMax)return false;
+  return true;
+}
+function filteredRows(){ return S.dt?S.dt.raw.filter(function(r){return passRow(r,null);}):[]; }
+function optionCounts(k){
+  var m={}; if(!S.dt)return m;
+  S.dt.raw.forEach(function(r){ if(passRow(r,k)) m[r[k]]=(m[r[k]]||0)+1; });
+  return m;
+}
+function toggleVal(k,v,on){
+  var vals=universe(k), sel=F[k];
+  if(!sel){ sel={}; vals.forEach(function(x){sel[x]=1;}); }
+  if(on)sel[v]=1; else delete sel[v];
+  F[k]=(Object.keys(sel).length===vals.length)?null:sel;
+}
+function paintList(drop){
+  var k=drop.getAttribute('data-k');
+  var box=drop.querySelector('.fsearch');
+  var q=(box&&box.value||'').toLowerCase().trim();
+  var vals=universe(k), cnt=optionCounts(k), sel=F[k];
+  var shown=0, html='';
+  vals.forEach(function(v){
+    if(q&&v.toLowerCase().indexOf(q)<0)return;
+    shown++;
+    var on=sel?!!sel[v]:true;
+    html+='<label class="fopt"><input type="checkbox" data-v="'+esc(v)+'"'+(on?' checked':'')+'>'
+        +'<span class="nm" title="'+esc(v)+'">'+esc(v)+'</span>'
+        +'<span class="ct">'+nf.format(cnt[v]||0)+'</span></label>';
+  });
+  drop.querySelector('.flist').innerHTML=html||'<div class="empty" style="padding:20px 8px"><p>Tidak ada opsi yang cocok.</p></div>';
+  var nsel=sel?Object.keys(sel).length:vals.length;
+  var all=drop.querySelector('input[data-all]');
+  if(all){ all.checked=!sel; all.indeterminate=!!sel&&nsel>0; }
+  var fc=drop.querySelector('.fallct'); if(fc)fc.textContent=nf.format(vals.length);
+  var ct=drop.querySelector('.fcount');
+  if(ct)ct.textContent=nf.format(nsel)+' dari '+nf.format(vals.length)+' dipilih'+(q?' \u00b7 '+nf.format(shown)+' cocok':'');
+}
+/* atur posisi & tinggi menu agar selalu muat di layar */
+function placeMenu(drop){
+  var m=drop.querySelector('.fmenu'), l=drop.querySelector('.flist');
+  if(!m||!l)return;
+  m.classList.remove('up','right'); l.style.maxHeight='300px';
+  var r=drop.getBoundingClientRect();
+  var vh=window.innerHeight||document.documentElement.clientHeight;
+  var vw=window.innerWidth||document.documentElement.clientWidth;
+  var below=vh-r.bottom-14, above=r.top-14;
+  if(above>below+40&&below<280) m.classList.add('up');
+  var space=m.classList.contains('up')?above:below;
+  var hd=(m.querySelector('.fhead')?m.querySelector('.fhead').offsetHeight:0)
+        +(m.querySelector('.ffoot')?m.querySelector('.ffoot').offsetHeight:0)+28;
+  l.style.maxHeight=Math.max(150,Math.min(420,space-hd))+'px';
+  if(m.getBoundingClientRect().right>vw-8) m.classList.add('right');
+}
+function openDrop(drop){ drop.classList.add('open'); paintList(drop); placeMenu(drop);
+  var s=drop.querySelector('.fsearch'); if(s)s.focus(); }
+function paintCaps(){
+  var n=0;
+  document.querySelectorAll('#filterBar .fdrop').forEach(function(dp){
+    var k=dp.getAttribute('data-k'), sel=F[k], vals=universe(k);
+    dp.querySelector('.fbtn').classList.toggle('active',!!sel);
+    dp.querySelector('.cap').textContent=sel?(Object.keys(sel).length+'/'+vals.length):'semua';
+    if(sel)n++;
+  });
+  if(durMin!=null||durMax!=null)n++;
+  return n;
+}
+function renderFilters(){
+  var bar=el('filterBar'); if(!bar)return;
+  if(!S.dt||!S.dt.raw){bar.innerHTML='<div class="empty" style="padding:16px 10px"><p>Upload file Excel atau klik \u201cLihat contoh data\u201d untuk memunculkan filter.</p></div>';return;}
+  bar.innerHTML=FDEF.map(function(f){
+    return '<div class="fdrop" data-k="'+f.k+'">'
+      +'<button class="fbtn" type="button">'+f.lab+' <span class="cap">semua</span>'
+      +'<i class="ti ti-chevron-down" style="font-size:14px"></i></button>'
+      +'<div class="fmenu">'
+      +'<div class="fhead"><input class="fsearch" placeholder="Cari\u2026" autocomplete="off">'
+      +'<label class="fopt all"><input type="checkbox" data-all="1" checked><span class="nm">(Pilih semua)</span><span class="ct fallct">0</span></label></div>'
+      +'<div class="flist"></div>'
+      +'<div class="ffoot"><span class="fcount"></span><span style="white-space:nowrap">'
+      +'<button type="button" class="fmini" data-only="1">Pilih yang tampil</button>'
+      +'<button type="button" class="fmini" data-clear="1">Kosongkan</button></span></div></div></div>';
+  }).join('');
+  document.querySelectorAll('#filterBar .fdrop').forEach(paintList);
+  paintCaps();
+  el('bdDims').innerHTML=BD_DIMS.map(function(x){
+    return '<button class="dim'+(x.k===bdMode?' on':'')+'" data-dim="'+x.k+'">'+x.lab+'</button>';}).join('');
+}
+
+/* ================= RENDER BREAKDOWN ================= */
+function computePM(rows){
+  var bkdEq={},modes={};
+  rows.forEach(function(r){
+    if(!r.isb)return;
+    var eq=stripCode(r.eqe); if(!eq||eq==='(Kosong)')return;
+    bkdEq[eq]=(bkdEq[eq]||0)+1;
+    if(r.det&&r.det!=='(Kosong)'){modes[eq]=modes[eq]||{};modes[eq][r.det]=(modes[eq][r.det]||0)+1;}
+  });
+  var taskMap={'Packer 3':'Cek & ganti rubber hose, setting spout',
+   'Lift SAP':'Inspeksi sensor palet & pelumasan lift',
+   'Conveyor Deflection SAP':'Setting & cek deflection belt',
+   'Left Press':'Cek & kalibrasi sensor left press',
+   'Lift Palettizer':'Pelumasan rantai & cek inverter',
+   'M-tec':'Cek koneksi profibus & panel kontrol',
+   'Conveyor Exit SAP':'Cek & ganti roller exit',
+   'Mixer MR 220 / Mixer 1':'Pelumasan & cek seal/gearbox',
+   'Mixer MR 45 / Mixer 2':'Pelumasan & cek seal/gearbox',
+   'Scale 2.2 (Material Line 2)':'Kalibrasi & cek load cell',
+   'Conveyor Lift SAP':'Cek motor & inverter',
+   'Hatch Palletizer':'Kalibrasi sensor & setting hatch',
+   'Pusher 1 Palletizer':'Cek mekanis & pelumasan pusher'};
+  var ks=Object.keys(bkdEq), minN=10;
+  var keys=ks.filter(function(k){return bkdEq[k]>=minN;});
+  if(keys.length<6){minN=5;keys=ks.filter(function(k){return bkdEq[k]>=minN;});}
+  if(keys.length<3){minN=2;keys=ks.filter(function(k){return bkdEq[k]>=minN;});}
+  return keys.map(function(k){
+    var n=bkdEq[k], mtbf=Math.round(3650/n)/10;
+    var itv=mtbf<=4?'Tiap 2 hari':mtbf<=10?'Mingguan':mtbf<=25?'Tiap 2 minggu':'Bulanan';
+    var mode='',best=0,mm=modes[k]||{};
+    Object.keys(mm).forEach(function(x){if(mm[x]>best){best=mm[x];mode=x;}});
+    return [k, taskMap[k]||('Inspeksi rutin \u2014 fokus: '+(mode||'pemeriksaan umum')), itv, mtbf, n, mode||'-'];
+  }).sort(function(a,b){return b[4]-a[4];}).slice(0,12);
+}
+function r1(x){return Math.round(x*10)/10;}
+function bdRender(rows){
+  var m={};
+  rows.forEach(function(r){ m[r[bdMode]]=(m[r[bdMode]]||0)+r.dur; });
+  var arr=Object.keys(m).map(function(k){return [k,r1(m[k])];}).sort(function(a,b){return b[1]-a[1];});
+  var lab=''; BD_DIMS.forEach(function(x){if(x.k===bdMode)lab=x.lab;});
+  el('bdSub').textContent='total menit downtime per '+lab+' \u00b7 '+arr.length+' nilai'
+    +(F['loss']?' \u00b7 sesuai filter Loss Category':'');
+  bars('bdChart',arr,'linear-gradient(135deg,#5aa6f0,#2f78c8)');
+}
+function renderLine(rows){
+  var m={};
+  rows.forEach(function(r){var o=m[r.line]||(m[r.line]={dur:0,n:0,b:0});
+    o.dur+=r.dur;o.n++; if(r.isb)o.b++;});
+  var ks=Object.keys(m).sort();
+  el('lineWrap').innerHTML=ks.map(function(k){var o=m[k];
+    return '<div class="lirow"><span class="litxt"><span class="a">'+esc(k)+'</span>'
+      +'<span class="b">'+nf.format(o.n)+' baris \u00b7 '+nf.format(o.b)+' kejadian breakdown</span></span>'
+      +'<span class="riteflex">'
+      +'<span class="tag" style="background:var(--info-bg);color:var(--info-tx)">Duration '+nf.format(Math.round(o.dur))+' mnt</span>'
+      +'</span></div>';
+  }).join('')||'<div class="empty"><div class="eico"><i class="ti ti-git-branch"></i></div><p>Tidak ada data pada filter ini.</p></div>';
+}
+function renderDetail(rows){
+  var q=(el('dtSearch').value||'').toLowerCase().trim();
+  var list=q?rows.filter(function(r){
+    return (r.desc+' '+r.eqe+' '+r.det+' '+r.cat+' '+r.packer+' '+r.line+' '+r.loss).toLowerCase().indexOf(q)>=0;}):rows;
+  if(!list.length){
+    el('dtTable').innerHTML='<div class="empty"><div class="eico"><i class="ti ti-table-off"></i></div><p>Tidak ada baris yang cocok.</p></div>';
+    el('dtCnt').textContent=''; return;
+  }
+  var show=list.slice(0,300);
+  var h='<table class="dtable"><thead><tr>'
+    +'<th>Bulan</th><th>Line</th><th>Packer</th><th>Equipment (Eng.)</th><th>Equipment Detail</th>'
+    +'<th>Description</th><th>Category BKD</th><th>Loss Category</th>'
+    +'<th class="num">Duration</th><th class="num">BKD</th></tr></thead><tbody>';
+  show.forEach(function(r){
+    h+='<tr><td>'+esc((MO_LBL[r.mo]||r.mo)+(r.dt?' '+r.dt:''))+'</td>'
+      +'<td>'+esc(r.line)+'</td><td>'+esc(r.packer)+'</td>'
+      +'<td class="ell" title="'+esc(r.eqe)+'">'+esc(r.eqe)+'</td>'
+      +'<td class="ell" title="'+esc(r.det)+'">'+esc(r.det)+'</td>'
+      +'<td class="ell" title="'+esc(r.desc)+'">'+esc(r.desc||'-')+'</td>'
+      +'<td><span class="badge'+(/breakdown/i.test(r.cat)?' bkd':'')+'">'+esc(r.cat)+'</span></td>'
+      +'<td><span class="badge'+(r.isb?' bkd':'')+'">'+esc(r.loss)+'</span></td>'
+      +'<td class="num">'+nf.format(r1(r.dur))+'</td>'
+      +'<td class="num">'+nf.format(r1(r.bkd))+'</td></tr>';
+  });
+  h+='</tbody></table>';
+  el('dtTable').innerHTML=h;
+  el('dtCnt').textContent='menampilkan '+nf.format(show.length)+' dari '+nf.format(list.length)+' baris'
+    +(list.length>300?' (dibatasi 300 baris pertama \u2014 persempit filter/pencarian)':'');
+}
+function renderDT(){
+  var D=S.dt; if(!D||!D.raw)return;
+  var rows=filteredRows();
+  var total=0,bkdN=0,bkdDur=0;
+  rows.forEach(function(r){ total+=r.dur; if(r.isb){bkdN++;bkdDur+=r.dur;} });
+
+  kpi('bdKpi',[['Total downtime',nf.format(Math.round(total)),'mnt'],
+   ['Kejadian breakdown',nf.format(bkdN),'dari '+nf.format(rows.length)],
+   ['MTTR rata-rata',nf.format(bkdN?Math.round(bkdDur/bkdN):0),'mnt']]);
+
+  var byMo={}; rows.forEach(function(r){ if(r.mo)byMo[r.mo]=(byMo[r.mo]||0)+r.dur; });
+  var month=MO_ORDER.map(function(m){return [MO_LBL[m]||m,Math.round(byMo[m]||0)];})
+    .filter(function(x){return x[1]>0;});
+  el('monthSub').textContent='menit per bulan \u00b7 total: '+nf.format(Math.round(total))+' menit';
+  if(month.length){
+    var mx=Math.max.apply(null,month.map(function(r){return r[1];}));
+    el('monthWrap').innerHTML='<div class="month">'+month.map(function(r){
+      var h=Math.round(r[1]/mx*110);
+      return '<div class="mcol"><span class="mv">'+nf.format(r[1])+'</span><div class="mb" style="height:'+h+'px"></div><span class="ml">'+r[0]+'</span></div>';
+    }).join('')+'</div>';
+  } else {
+    el('monthWrap').innerHTML='<div class="empty"><div class="eico"><i class="ti ti-chart-bar-off"></i></div><p>Tidak ada data pada filter ini.</p></div>';
+  }
+
+  renderLine(rows); bdRender(rows); renderDetail(rows);
+  D.pm=computePM(rows); renderPM();
+
+  var nf_=paintCaps();
+  el('filterSub').textContent=(nf_?nf_+' filter aktif \u00b7 ':'')+nf.format(rows.length)+' dari '+nf.format(D.raw.length)+' baris ditampilkan';
+  var selLine=F['line']?Object.keys(F['line']):universe('line');
+  el('crumbLine').textContent=selLine.length?selLine.join(' \u00b7 '):'Tidak ada Line dipilih';
+  el('crumbInfo').textContent=nf.format(rows.length)+' baris \u00b7 '+nf.format(Math.round(total))+' mnt';
+  el('crumb').style.display='flex';
+  el('durInfo').textContent=(durMin!=null||durMax!=null)?'(filter durasi aktif)':'';
+  setPill(D.sample?'sample':'real',D.sample?'Contoh data':'Data ter-upload');
+}
+function afterDT(){ resetFilters(); renderFilters(); renderDT(); renderCal(); }
+
+function spRender(){
+  var u=S.us; if(!u)return;
+  var q=(el('spSearch').value||'').toLowerCase().trim();
+  var full=(spMode==='item')?u.spItem:u.spMesin;
+  var rows=q?full.filter(function(r){return r[0].toLowerCase().indexOf(q)>=0;}):full;
+  if(spMode==='item'){
+    el('spSub').textContent='semua item, urut terbanyak · total '+nf.format(u.qty)+' unit';
+  }else{
+    el('spSub').textContent='hanya baris dgn kode mesin · '+nf.format(u.codedQty)+' unit terlacak ke mesin (sisanya tools/umum)';
+  }
+  bars('spChart',rows,'linear-gradient(135deg,#5aa6f0,#2f78c8)');
+  el('spCnt').textContent=q?('menampilkan '+rows.length+' dari '+full.length):('total '+full.length+' baris');
+}
+function renderSP(){
+  var u=S.us;
+  var k=[]; 
+  if(u){k.push(['Qty terpakai',nf.format(u.qty),'unit'],['Jenis item',nf.format(u.items),'item']);}
+  if(S.st){k.push(['SKU di gudang',nf.format(S.st.sku),'sku']);}
+  if(u&&S.st){k.push(['Stok kritis',String(critList().lowCount),'item']);}
+  if(k.length)kpi('spKpi',k); else el('spKpi').innerHTML='';
+  if(u)spRender();
+  renderST();
+}
+function critList(){
+  var out=[],low=0;
+  if(S.us&&S.st){
+    Object.keys(S.st.map).forEach(function(it){
+      var yr=S.us.rate[it]||0, oh=S.st.map[it].onhand;
+      if(yr>0&&oh>0){
+        var cover=oh/(yr/12);
+        if(cover<2)low++;
+        out.push([S.st.map[it].nama.slice(0,34),Math.round(oh),Math.round(yr),Math.round(cover*10)/10]);
+      }
+    });
+    out.sort(function(a,b){return a[3]-b[3];});
+  }
+  return {rows:out,lowCount:low};
+}
+function renderST(){
+  if(!(S.us&&S.st)){return;}
+  var c=critList();
+  var q=(el('stSearch').value||'').toLowerCase().trim();
+  var rows=q?c.rows.filter(function(r){return r[0].toLowerCase().indexOf(q)>=0;}):c.rows;
+  el('stList').innerHTML=rows.map(function(r){
+    var crit=r[3]<1;
+    var bg=crit?'var(--danger-bg)':'var(--warn-bg)', tc=crit?'var(--danger-tx)':'var(--warn-tx)';
+    var ic=crit?'ti-alert-triangle':'ti-clock';
+    return '<div class="lirow"><span class="litxt"><span class="a">'+r[0]+'</span><span class="b">stok '+nf.format(r[1])+' · terpakai '+nf.format(r[2])+' unit/thn</span></span><span class="tag" style="background:'+bg+';color:'+tc+'"><i class="ti '+ic+'" style="font-size:13px;vertical-align:-1px;margin-right:3px"></i>cover '+r[3].toFixed(1)+' bln</span></div>';
+  }).join('')||'<div class="empty"><div class="eico"><i class="ti ti-checks"></i></div><p>Tidak ada item yang cocok.</p></div>';
+  el('stCnt').textContent=q?('menampilkan '+rows.length+' dari '+c.rows.length):('total '+c.rows.length+' item');
+}
+function renderPM(){
+  var d=S.dt; if(!d)return;
+  var biweek=d.pm.filter(function(t){return t[2]==='Tiap 2 minggu'||t[2]==='Mingguan'||t[2]==='Tiap 2 hari'}).length;
+  var monthly=d.pm.filter(function(t){return t[2]==='Bulanan'}).length;
+  var worst=d.pm.slice().sort(function(a,b){return a[3]-b[3]})[0];
+  kpi('pmKpi',[['Total terjadwal',String(d.pm.length),'mesin'],
+   ['Interval rapat (≤2 minggu)',String(biweek),'mesin'],
+   ['Interval bulanan',String(monthly),'mesin'],
+   ['MTBF terpendek',worst?String(worst[3]):'-','hari'+(worst?' ('+worst[0].slice(0,16)+')':'')]]);
+  var rows=d.pm.slice();
+  if(pmMode==='2minggu')rows=rows.filter(function(t){return t[2]!=='Bulanan'});
+  el('pmList').innerHTML=rows.map(function(t){
+    var urgent=t[3]<=15;
+    var bg=urgent?'var(--warn-bg)':'var(--bg-soft)', tc=urgent?'var(--warn-tx)':'var(--tx-2)';
+    return '<div class="lirow"><span class="litxt"><span class="a">'+t[1]+'</span><span class="b">'+t[0]+' · mode dominan: '+t[5]+' · '+t[4]+' BKD</span></span><span class="riteflex"><span class="tag" style="background:'+bg+';color:'+tc+'">MTBF '+t[3]+' hr</span><span class="intv">'+t[2]+'</span></span></div>';
+  }).join('')||'<div class="empty"><div class="eico"><i class="ti ti-calendar-off"></i></div><p>Tidak ada mesin pada filter ini.</p></div>';
+}
+
+/* ================= UI HELPERS (toast, pill, reset) ================= */
+function toast(msg,type){
+  var box=el('toasts'); var t=document.createElement('div');
+  var ic=type==='err'?'ti-alert-circle':type==='info'?'ti-info-circle':'ti-circle-check';
+  t.className='toast '+(type||'ok'); t.innerHTML='<i class="ti '+ic+'"></i><span>'+msg+'</span>';
+  box.appendChild(t);
+  setTimeout(function(){t.style.transition='opacity .3s,transform .3s';t.style.opacity='0';t.style.transform='translateY(8px)';setTimeout(function(){t.remove();},300);},3200);
+}
+function setPill(state,text){
+  var p=el('periodPill');
+  var cls=state==='sample'?' sample':(state==='real'||state===true)?' live':'';
+  p.className='pill'+cls;
+  p.innerHTML='<span class="dot"></span> '+text;
+}
+function dataLoaded(){
+  el('btnReset').classList.remove('hide');
+  el('exportWrap').classList.remove('hide');
+}
+function setChip(id,state,extra){
+  var c=el(id), icon=state==='ok'?'ti-circle-check':state==='err'?'ti-circle-x':state==='load'?'ti-loader-2':'ti-circle-dashed';
+  c.className='chip'+(state==='ok'?' ok':state==='err'?' err':'');
+  c.innerHTML='<i class="ti '+icon+(state==='load'?' spin':'')+'"></i> '+extra;
+}
+
+/* ================= SAMPLE DATA (demo) ================= */
+function loadSample(){
+  var MOS=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  var EQ=[['K01.Packer 3','Spout 1'],['G34.Hatch Palletizer','Hatch Inventer'],
+    ['G42.Lift Palettizer','Lift inventer'],['G35.Front Hatch Palletizer','Front Hatch Palletizer'],
+    ['L12.Lift SAP','Lift SAP'],['G37.Left Press','Left Press'],
+    ['D04.Mixer MR 220 / Mixer 1','Mixer MR 220 / Mixer 1'],['M-tec','Profibus'],
+    ['E01.Packer Line A','Deflection'],['B05.Sieving Mesin','Screen']];
+  var CAT=['Mechanical BKD - Breakdown','Electrical Breakdown','Electrical BKD - Breakdown',
+    'Mechanical Breakdown','Automation/Software BKD - Breakdown','Other','(Kosong)'];
+  var LOSS=['BKD - Breakdown','SST - Short Stop','SPEEDLOSS','MNT - Routine Maintenance','PRO - Process failures'];
+  var PACK=['Packer-A-B','Packer-A','Packer-B'];
+  var seed=7; function rnd(){seed=(seed*1103515245+12345)%2147483648;return seed/2147483648;}
+  var raw=[];
+  for(var i=0;i<280;i++){
+    var line=rnd()<0.56?'Line 1':'Line 2';
+    var e=EQ[Math.floor(rnd()*EQ.length)];
+    var ls=rnd()<0.55?'BKD - Breakdown':LOSS[Math.floor(rnd()*LOSS.length)];
+    var dur=r1(rnd()*rnd()*130+3);
+    var isB=/bkd/i.test(ls);
+    raw.push({mo:MOS[Math.floor(rnd()*12)], dt:String(1+Math.floor(rnd()*28)),
+      line:line, packer:line==='Line 2'?'Packer-3':PACK[Math.floor(rnd()*PACK.length)],
+      eqc:line==='Line 1'?'CBT1':'CBT2', eqe:e[0], det:e[1],
+      cat:CAT[Math.floor(rnd()*CAT.length)], loss:ls,
+      desc:'Contoh kejadian pada '+e[1].toLowerCase(), dur:dur,
+      bkd:r1(dur*(0.85+rnd()*0.15)), isb:isB});
+  }
+  raw.forEach(function(x){var mi=MOS.indexOf(x.mo); if(mi<0)mi=0; x._d=new Date(Date.UTC(2025,mi,1+Math.floor(rnd()*27))); x._yr=2025;});
+  S.dt={raw:raw, hasBkd:true, rows:raw.length, pm:[], sample:true, year:2025};
+  var praw=[]; EQ.forEach(function(e,i){ for(var w=0;w<3;w++){ praw.push({kind:'p',equipment:e[0],proc:'PM',subassy:'',component:e[1],action:'Inspeksi & perawatan '+e[1].toLowerCase(),task:'Preventive',pic:['Marsan','Suryadi','Tri.P','Vendor'][i%4],status:'Open',week:33+i*2+w}); } });
+  S_pm={raw:praw, year:2025};
+  setChip('chip-pm','ok','PM \u00b7 '+nf.format(praw.length)+' jadwal');
+  S.us={
+    qty:4820, items:312, rows:1240,
+    spItem:[['Bearing 6204 2RS',420],['V-Belt B-50',310],['Seal Mechanical 35mm',280],['Roller Conveyor 89mm',240],['Contactor LC1D25',190],['Proximity Sensor M18',170],['Grease EP2 Cartridge',160],['Pneumatic Cylinder 32x100',140],['Profibus Connector',120],['Solenoid Valve 24VDC',110]],
+    spMesin:[['Packer 3',640],['Mixer 1',520],['Lift SAP',430],['Conveyor Exit',360],['M-tec',300],['Palletizer',260],['Left Press',180]],
+    rate:{'B05.001':420,'V12.002':310,'S33.003':280,'R08.004':240,'E21.005':190,'P18.006':170,'G02.007':160,'P32.008':140,'C44.009':120,'V24.010':110},
+    codedQty:3120, toolsQty:480
+  };
+  S.st={
+    sku:540, units:12850,
+    map:{
+      'B05.001':{onhand:18,nama:'Bearing 6204 2RS'},
+      'V12.002':{onhand:96,nama:'V-Belt B-50'},
+      'S33.003':{onhand:14,nama:'Seal Mechanical 35mm'},
+      'R08.004':{onhand:60,nama:'Roller Conveyor 89mm'},
+      'E21.005':{onhand:8,nama:'Contactor LC1D25'},
+      'P18.006':{onhand:42,nama:'Proximity Sensor M18'},
+      'G02.007':{onhand:120,nama:'Grease EP2 Cartridge'},
+      'P32.008':{onhand:10,nama:'Pneumatic Cylinder 32x100'},
+      'C44.009':{onhand:36,nama:'Profibus Connector'},
+      'V24.010':{onhand:22,nama:'Solenoid Valve 24VDC'}
+    }
+  };
+  setChip('chip-dt','ok','Downtime · '+nf.format(S.dt.rows)+' baris');
+  setChip('chip-us','ok','Usage · '+nf.format(S.us.rows)+' transaksi');
+  setChip('chip-st','ok','Stok · '+nf.format(S.st.sku)+' SKU');
+  afterDT(); renderSP(); dataLoaded();
+  setPill('sample','Contoh data');
+  toast('Contoh data berhasil dimuat','ok');
+}
+
+function resetData(){
+  S={dt:null,us:null,st:null};
+  S_pm=null;
+  ['chip-dt','chip-us','chip-st','chip-pm'].forEach(function(id){
+    var lbl={'chip-dt':'Downtime','chip-us':'Sparepart usage','chip-st':'Stok sparepart','chip-pm':'PM Monitoring'}[id];
+    setChip(id,'idle',lbl);
+  });
+  if(el('pmCal'))el('pmCal').innerHTML='';
+  if(el('pmSub'))el('pmSub').textContent='jadwal PM (Proses) & kejadian Breakdown per minggu \u2014 klik sel untuk detail';
+  el('bdKpi').innerHTML=''; el('spKpi').innerHTML=''; el('pmKpi').innerHTML='';
+  resetFilters(); renderFilters();
+  el('filterSub').textContent='semua baris ditampilkan';
+  el('lineWrap').innerHTML='<div class="empty"><div class="eico"><i class="ti ti-git-branch"></i></div><p>Belum ada data.</p></div>';
+  el('dtTable').innerHTML='<div class="empty"><div class="eico"><i class="ti ti-table-off"></i></div><p>Belum ada data.</p></div>';
+  el('dtCnt').textContent=''; el('durInfo').textContent='';
+  el('monthWrap').innerHTML='<div class="empty"><div class="eico"><i class="ti ti-chart-bar-off"></i></div><p>Belum ada data downtime</p><p class="ehint">Upload file atau klik “Lihat contoh data”.</p></div>';
+  el('bdChart').innerHTML='<div class="empty"><div class="eico"><i class="ti ti-list-search"></i></div><p>Belum ada data.</p></div>';
+  el('bdSub').textContent='pilih dimensi di bawah';
+  el('spChart').innerHTML='<div class="empty"><div class="eico"><i class="ti ti-package-off"></i></div><p>Upload file sparepart usage.</p></div>'; el('spCnt').textContent='';
+  el('stList').innerHTML='<div class="empty"><div class="eico"><i class="ti ti-building-warehouse"></i></div><p>Butuh file stok + usage untuk menghitung cover.</p></div>'; el('stCnt').textContent='';
+  el('pmList').innerHTML='<div class="empty"><div class="eico"><i class="ti ti-calendar-off"></i></div><p>Upload file data downtime untuk menyusun jadwal.</p></div>';
+  el('crumb').style.display='none';
+  el('btnReset').classList.add('hide'); el('exportWrap').classList.add('hide');
+  setPill(false,'Belum ada data');
+  toast('Data dibersihkan','info');
+}
+
+/* ================= CALENDAR PM MONITORING ================= */
+var CAL_MO=['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'];
+var CAL_WK=['W1','W2','W3','W4','W5'];
+
+/* --- kalender ISO (UTC) : petakan nomor minggu / tanggal -> {bulan, minggu-dalam-bulan} --- */
+function isoMondayY(y,w){
+  var jan4=new Date(Date.UTC(y,0,4));
+  var dow=(jan4.getUTCDay()+6)%7;
+  var wk1=new Date(jan4); wk1.setUTCDate(jan4.getUTCDate()-dow);
+  var mon=new Date(wk1);  mon.setUTCDate(wk1.getUTCDate()+(w-1)*7);
+  return mon;
+}
+function mapWeekY(w,y){
+  var thu=isoMondayY(y,w); thu.setUTCDate(thu.getUTCDate()+3);
+  var mon=isoMondayY(y,w), sun=new Date(mon); sun.setUTCDate(mon.getUTCDate()+6);
+  return {mi:thu.getUTCMonth(), wom:Math.min(5,Math.floor((thu.getUTCDate()-1)/7)+1), mon:mon, sun:sun};
+}
+function mapDate(dt){
+  var thu=new Date(Date.UTC(dt.getFullYear(),dt.getMonth(),dt.getDate()));
+  var dow=(thu.getUTCDay()+6)%7; thu.setUTCDate(thu.getUTCDate()-dow+3);
+  var mon=new Date(Date.UTC(dt.getFullYear(),dt.getMonth(),dt.getDate())); mon.setUTCDate(mon.getUTCDate()-dow);
+  var sun=new Date(mon); sun.setUTCDate(mon.getUTCDate()+6);
+  return {mi:thu.getUTCMonth(), wom:Math.min(5,Math.floor((thu.getUTCDate()-1)/7)+1), mon:mon, sun:sun};
+}
+function calFmt(d){ return d.getUTCDate()+' '+CAL_MO[d.getUTCMonth()]; }
+function calYear(){
+  if(S_pm&&S_pm.year) return S_pm.year;
+  if(S.dt&&S.dt.year) return S.dt.year;
+  return new Date().getFullYear();
+}
+
+/* --- PARSER PM_MONITORING (Proses) --- */
+function parsePM(wb){
+  var out=null;
+  wb.SheetNames.forEach(function(sn){
+    var rows=XLSX.utils.sheet_to_json(wb.Sheets[sn],{header:1,raw:true,defval:null});
+    var hr=findHeader(rows,'Equipment'); if(hr<0)return;
+    var o=toObjects(rows,hr), head=o.head, data=o.data;
+    var col=function(re_){return findCol(head,function(h){return re_.test(h);});};
+    var cEq=col(/^equipment$/i), cComp=col(/^component/i), cAct=col(/^action/i),
+        cTask=col(/^task/i), cPic=col(/^pic$/i), cStat=col(/^status/i),
+        cProc=col(/process\s*step/i), cSub=col(/sub\s*assy/i);
+    if(cEq==null)return;
+    var weekCols=[];
+    head.forEach(function(h,idx){var m=/^(?:W|WEEK|MINGGU)\s*0*(\d+)$/i.exec(h);
+      if(m)weekCols.push({col:h,wk:parseInt(m[1],10)});});
+    if(!weekCols.length)return;
+    var raw=[];
+    data.forEach(function(r){
+      var eq=norm(r[cEq]); if(!eq||eq.toLowerCase()==='nan')return;
+      var base={equipment:eq, proc:norm(cProc!=null?r[cProc]:'')||'PM',
+        subassy:norm(cSub!=null?r[cSub]:''), component:norm(cComp!=null?r[cComp]:''),
+        action:norm(cAct!=null?r[cAct]:''), task:norm(cTask!=null?r[cTask]:''),
+        pic:norm(cPic!=null?r[cPic]:''), status:norm(cStat!=null?r[cStat]:'')};
+      weekCols.forEach(function(wc){
+        var v=norm(r[wc.col]); if(v===''||v.toLowerCase()==='nan')return;
+        var e={}; for(var k in base)e[k]=base[k];
+        e.kind='p'; e.week=wc.wk; e.mark=v; raw.push(e);
+      });
+    });
+    if(raw.length){ if(!out||raw.length>out.raw.length) out={raw:raw, year:2025}; }
+  });
+  return out;
+}
+
+/* --- kumpulan kejadian breakdown dari data downtime (MU-Maintenance) --- */
+function breakdownEvents(){
+  if(!S.dt||!S.dt.raw)return [];
+  return S.dt.raw.filter(function(r){return r.isb;}).map(function(r){
+    return {kind:'b', equipment:r.eqe, subassy:'', component:r.det, action:r.desc||r.loss,
+      task:r.cat, pic:'', status:r.line, dur:r.dur, dateObj:r._d||null, mo:r.mo, line:r.line,
+      packer:r.packer, cat:r.cat, loss:r.loss, desc:r.desc};
+  });
+}
+
+/* --- bangun sel kalender: cellPM[wom][mi] = {p:[...], b:[...]} --- */
+function buildCal(){
+  var y=calYear(), cells=[];
+  for(var w=0;w<5;w++){cells.push([]);for(var m=0;m<12;m++)cells[w].push({p:[],b:[]});}
+  if(S_pm&&S_pm.raw){
+    S_pm.raw.forEach(function(e){
+      var mp=mapWeekY(e.week,y); var ee={}; for(var k in e)ee[k]=e[k];
+      ee.mi=mp.mi; ee.wom=mp.wom; ee.range=calFmt(mp.mon)+' \u2013 '+calFmt(mp.sun);
+      cells[mp.wom-1][mp.mi].p.push(ee);
+    });
+  }
+  breakdownEvents().forEach(function(e){
+    var mp=e.dateObj?mapDate(e.dateObj):null;
+    if(!mp){ var mi=CAL_MO.indexOf(e.mo); if(mi<0)mi=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'].indexOf(e.mo); if(mi<0)return; mp={mi:mi,wom:1,mon:null,sun:null}; }
+    var ee={}; for(var k in e)ee[k]=e[k];
+    ee.mi=mp.mi; ee.wom=mp.wom; ee.range=(mp.mon?calFmt(mp.mon)+' \u2013 '+calFmt(mp.sun):(e.mo||''));
+    cells[mp.wom-1][mp.mi].b.push(ee);
+  });
+  return cells;
+}
+var CAL=null;
+function pmMatch(e){
+  var q=(el('pmSearch').value||'').toLowerCase().trim(); if(!q)return true;
+  return ((e.equipment||'')+' '+(e.component||'')+' '+(e.action||'')+' '+(e.task||'')+' '+(e.pic||'')+' '+(e.desc||'')+' '+(e.status||'')).toLowerCase().indexOf(q)>=0;
+}
+function cellItems(c){
+  var p=(pmView==='b')?[]:c.p.filter(pmMatch);
+  var b=(pmView==='p')?[]:c.b.filter(pmMatch);
+  return {p:p,b:b};
+}
+function miniMarks(c){
+  var it=cellItems(c), html='<div class="mgrid">', tot=it.p.length+it.b.length;
+  var cap=12, shown=0;
+  for(var i=0;i<it.p.length&&shown<cap;i++,shown++) html+='<span class="mk p"></span>';
+  for(var j=0;j<it.b.length&&shown<cap;j++,shown++) html+='<span class="mk b"></span>';
+  html+='</div>'; return {html:html, n:tot};
+}
+function renderCal(){
+  if(!S_pm && !(S.dt&&S.dt.raw)){
+    el('pmCal').innerHTML=''; el('pmHint').textContent='Upload file PM_Monitoring.xlsx (Proses) dan/atau data downtime (Breakdown).';
+    return;
+  }
+  CAL=buildCal();
+  var h="<thead><tr><th class='cn'></th>";
+  CAL_MO.forEach(function(m){h+="<th class='mon'>"+m+"</th>";});
+  h+="</tr></thead><tbody>";
+  var colTot=new Array(12).fill(0);
+  CAL_WK.forEach(function(w,wi){
+    h+="<tr><td class='wk'>"+w+"</td>";
+    CAL_MO.forEach(function(m,mi){
+      var mm=miniMarks(CAL[wi][mi]);
+      colTot[mi]+=mm.n;
+      var cls=mm.n>0?'cel':'cel mt';
+      h+="<td class='"+cls+"' data-w='"+wi+"' data-m='"+mi+"'><div class='celtop'>"+(mm.n>0?mm.html:'')+(mm.n>0?"<span class='celn'>"+mm.n+"</span>":"")+"</div></td>";
+    });
+    h+="</tr>";
+  });
+  h+="<tr class='sig'><td class='cn wk' style='color:var(--tx-3)'>\u03A3</td>";
+  colTot.forEach(function(t){h+="<td>"+(t||'')+"</td>";});
+  h+="</tr></tbody>";
+  el('pmCal').innerHTML=h;
+  el('pmCal').querySelectorAll('td.cel').forEach(function(td){
+    if(td.classList.contains('mt'))return;
+    td.addEventListener('click',function(){openCalCell(+td.getAttribute('data-w'),+td.getAttribute('data-m'));});
+  });
+  var np=0,nb=0; CAL.forEach(function(row){row.forEach(function(c){var it=cellItems(c);np+=it.p.length;nb+=it.b.length;});});
+  el('pmSub').textContent=nf.format(np)+' jadwal PM (Proses) \u00b7 '+nf.format(nb)+' kejadian Breakdown \u00b7 tahun '+calYear();
+}
+
+/* --- MODAL kalender: level 1 grid equipment, level 2 detail --- */
+var calCur=null;
+function calByEq(wi,mi){
+  var c=CAL[wi][mi], it=cellItems(c), map={};
+  function push(e){ var k=e.equipment||'(Tanpa equipment)'; (map[k]=map[k]||{p:[],b:[]})[e.kind].push(e); }
+  it.p.forEach(push); it.b.forEach(push);
+  return map;
+}
+function openCalCell(wi,mi){
+  calCur={wi:wi,mi:mi};
+  var map=calByEq(wi,mi), keys=Object.keys(map).sort();
+  el('m-back').style.display='none';
+  el('m-lab').textContent='Equipment \u00b7 PM & Breakdown';
+  el('m-title').textContent=CAL_MO[mi]+' \u00b7 '+CAL_WK[wi];
+  el('m-count').textContent=keys.length; el('m-count-lab').textContent='equipment';
+  var body=el('m-body');
+  var html='<div class="pm-modal-legend"><span class="sw"><span class="dotY"></span> ada PM</span>'
+    +'<span class="sw"><span class="triR"></span> ada Breakdown</span>'
+    +'<span class="sw"><span class="eqbox" style="width:16px;height:16px;background:var(--bg-soft)"></span> tidak ada</span></div>'
+    +'<div class="grid-hint" style="font-size:12px;color:var(--tx-2);margin-bottom:10px">Kotak berwarna = equipment terjadwal/kejadian di sel ini. Klik untuk detail.</div>'
+    +'<div class="eqgrid">';
+  keys.forEach(function(k,i){
+    var g=map[k], hasP=g.p.length>0, hasB=g.b.length>0;
+    var cls=hasP&&hasB?'pb':hasP?'p':'b';
+    html+='<div class="eqbox on '+cls+'" title="'+esc(k)+(hasP?' \u00b7 PM '+g.p.length:'')+(hasB?' \u00b7 BKD '+g.b.length:'')+'" data-eq="'+esc(k)+'">'+(i+1)+'</div>';
+  });
+  html+='</div>';
+  if(!keys.length) html='<div class="empty"><div class="eico"><i class="ti ti-calendar-off"></i></div><p>Tidak ada jadwal/kejadian pada filter ini.</p></div>';
+  body.innerHTML=html; body.scrollTop=0;
+  body.querySelectorAll('.eqbox.on').forEach(function(b){ b.addEventListener('click',function(){openCalDetail(b.getAttribute('data-eq'));}); });
+  overlay.classList.add('open');
+}
+function openCalDetail(eqName){
+  var map=calByEq(calCur.wi,calCur.mi), g=map[eqName]||{p:[],b:[]};
+  el('m-back').style.display=''; 
+  el('m-lab').textContent='Detail \u00b7 '+CAL_MO[calCur.mi]+' '+CAL_WK[calCur.wi];
+  el('m-title').textContent=eqName;
+  el('m-count').textContent=g.p.length+g.b.length; el('m-count-lab').textContent='item';
+  var body=el('m-body'), html='';
+  function card(e){
+    var isB=e.kind==='b';
+    var pic=e.pic?'<span class="pic">PIC: '+esc(e.pic)+'</span>':'';
+    var sub='<span class="k">Component:</span> '+esc(e.component||'-')
+          +' &nbsp;&middot;&nbsp; <span class="k">Action:</span> '+esc(e.action||'-')
+          +' &nbsp;&middot;&nbsp; <span class="k">Task:</span> '+esc(e.task||'-');
+    return '<div class="row" style="border-left-color:'+(isB?'#e2574c':'#e8a93c')+'">'
+      +'<div class="row-eq">'+esc(e.equipment)+' <span class="mtag '+(isB?'b':'p')+'">'+(isB?'Breakdown':'Proses (PM)')+'</span></div>'
+      +'<div class="row-sub">'+sub+'</div>'
+      +'<div class="row-meta">'+pic
+      + (isB&&e.dur!=null?'<span class="status">Durasi '+nf.format(Math.round(e.dur))+' mnt</span>':'')
+      + (e.status&&!isB?'<span class="status">'+esc(e.status)+'</span>':'')
+      + (isB&&e.line?'<span class="status">'+esc(e.line)+'</span>':'')
+      + '<span class="wk mono" style="background:'+(isB?'#fef2f2':'rgba(232,169,60,.14)')+';color:'+(isB?'#e2574c':'#8a5a12')+'">W'+(e.week!=null?(e.week<10?'0':'')+e.week:'-')+'</span>'
+      + '<span class="daterange mono">'+esc(e.range||'')+'</span>'
+      + '</div></div>';
+  }
+  g.p.forEach(function(e){html+=card(e);});
+  g.b.forEach(function(e){html+=card(e);});
+  body.innerHTML=html||'<div class="empty-msg">Tidak ada detail.</div>';
+  body.scrollTop=0;
+}
+
+/* ================= FILE INTAKE ================= */
+function classifyAndParse(wb,fname){
+  var found=false;
+  wb.SheetNames.forEach(function(sn){
+    var rows=XLSX.utils.sheet_to_json(wb.Sheets[sn],{header:1,raw:true,defval:null});
+    if(!rows.length)return;
+    var hr;
+    if(findHeader(rows,'Process Step')>=0 || findHeader(rows,'Strategy')>=0){
+      var pmres=parsePM(wb);
+      if(pmres){S_pm=pmres;setChip('chip-pm','ok','PM \u00b7 '+nf.format(pmres.raw.length)+' jadwal');renderCal();dataLoaded();found=true;return;}
+    }
+    if((hr=findHeader(rows,'Loss Category'))>=0){
+      var p=parseDowntime(toObjects(rows,hr));
+      if(p){S.dt=p;setChip('chip-dt','ok','Downtime · '+nf.format(p.rows)+' baris');afterDT();dataLoaded();found=true;}
+    } else if((hr=findHeader(rows,'Item No.'))>=0){
+      var p2=parseStock(toObjects(rows,hr));
+      if(p2){S.st=p2;setChip('chip-st','ok','Stok · '+nf.format(p2.sku)+' SKU');renderSP();dataLoaded();found=true;}
+    } else if((hr=findHeader(rows,'Item'))>=0){
+      var p3=parseUsage(toObjects(rows,hr));
+      if(p3){S.us=p3;setChip('chip-us','ok','Usage · '+nf.format(p3.rows)+' transaksi');renderSP();dataLoaded();found=true;}
+    }
+  });
+  if(found){ setPill('real','Data ter-upload'); toast(fname+' berhasil diproses','ok'); }
+  else toast('File "'+fname+'" tidak dikenali. Pastikan header aslinya (Loss Category / Item No. / Item).','err');
+}
+function handleFiles(files){
+  Array.prototype.forEach.call(files,function(f){
+    var rd=new FileReader();
+    rd.onload=function(e){
+      try{classifyAndParse(XLSX.read(new Uint8Array(e.target.result),{type:'array'}),f.name);}
+      catch(err){toast('Gagal membaca '+f.name+': '+err.message,'err');}
+    };
+    rd.readAsArrayBuffer(f);
+  });
+}
+var drop=el('drop'), fin=el('fileIn');
+drop.addEventListener('click',function(){fin.click();});
+fin.addEventListener('change',function(){handleFiles(fin.files);fin.value='';});
+['dragover','dragenter'].forEach(function(ev){drop.addEventListener(ev,function(e){e.preventDefault();drop.classList.add('over');});});
+['dragleave','drop'].forEach(function(ev){drop.addEventListener(ev,function(e){e.preventDefault();drop.classList.remove('over');});});
+drop.addEventListener('drop',function(e){handleFiles(e.dataTransfer.files);});
+
+/* ================= TOGGLES & TABS ================= */
+RED=css('--red'); BLUE=css('--blue');
+/* ---- dimensi grafik breakdown ---- */
+el('bdDims').addEventListener('click',function(e){
+ var b=e.target.closest?e.target.closest('.dim'):null; if(!b)return;
+ document.querySelectorAll('#bdDims .dim').forEach(function(x){x.classList.remove('on')});
+ b.classList.add('on'); bdMode=b.getAttribute('data-dim'); if(S.dt)renderDT();});
+/* ---- dropdown filter (centang bebas) ---- */
+el('filterBar').addEventListener('click',function(e){
+ var btn=e.target.closest?e.target.closest('.fbtn'):null;
+ if(btn){ e.stopPropagation();
+   var dp=btn.parentNode, open=dp.classList.contains('open');
+   document.querySelectorAll('#filterBar .fdrop').forEach(function(x){x.classList.remove('open');});
+   if(!open) openDrop(dp);
+   return; }
+ var mini=e.target.closest?e.target.closest('.fmini'):null;
+ if(mini){ e.stopPropagation();
+   var dp2=mini.closest('.fdrop'), k2=dp2.getAttribute('data-k');
+   var q2=(dp2.querySelector('.fsearch').value||'').toLowerCase().trim();
+   var all2=universe(k2);
+   if(mini.getAttribute('data-only')){
+     var o={}; all2.forEach(function(v){ if(!q2||v.toLowerCase().indexOf(q2)>=0)o[v]=1; });
+     F[k2]=(Object.keys(o).length===all2.length)?null:o;
+   } else { F[k2]={}; }
+   document.querySelectorAll('#filterBar .fdrop').forEach(paintList);
+   renderDT(); placeMenu(dp2); return; }
+ if(e.target.closest&&e.target.closest('.fmenu')) e.stopPropagation();});
+window.addEventListener('resize',function(){
+ document.querySelectorAll('#filterBar .fdrop.open').forEach(placeMenu);});
+window.addEventListener('scroll',function(){
+ document.querySelectorAll('#filterBar .fdrop.open').forEach(placeMenu);},true);
+el('filterBar').addEventListener('input',function(e){
+ if(e.target.classList.contains('fsearch')) paintList(e.target.closest('.fdrop'));});
+el('filterBar').addEventListener('change',function(e){
+ var inp=e.target; if(inp.type!=='checkbox')return;
+ var dp=inp.closest('.fdrop'), k=dp.getAttribute('data-k');
+ if(inp.getAttribute('data-all')) F[k]=inp.checked?null:{};
+ else toggleVal(k,inp.getAttribute('data-v'),inp.checked);
+ document.querySelectorAll('#filterBar .fdrop').forEach(paintList);
+ renderDT(); placeMenu(dp);});
+document.addEventListener('click',function(){
+ document.querySelectorAll('#filterBar .fdrop').forEach(function(x){x.classList.remove('open');});});
+/* ---- filter durasi ---- */
+function durChanged(){
+ var a=parseFloat(el('durMin').value), b=parseFloat(el('durMax').value);
+ durMin=isNaN(a)?null:a; durMax=isNaN(b)?null:b;
+ if(S.dt){document.querySelectorAll('#filterBar .fdrop').forEach(paintList); renderDT();}}
+el('durMin').addEventListener('input',durChanged);
+el('durMax').addEventListener('input',durChanged);
+/* ---- reset & pencarian tabel ---- */
+el('btnResetFilter').addEventListener('click',function(){
+ resetFilters(); if(S.dt){renderFilters(); renderDT(); toast('Filter direset','info');}});
+el('dtSearch').addEventListener('input',function(){if(S.dt)renderDetail(filteredRows());});
+document.querySelectorAll('.tg[data-sp]').forEach(function(b){b.addEventListener('click',function(){
+ document.querySelectorAll('.tg[data-sp]').forEach(function(x){x.classList.remove('on')});b.classList.add('on');
+ spMode=b.dataset.sp; el('spSearch').value=''; if(S.us)spRender();});});
+document.querySelectorAll('.tg[data-pm]').forEach(function(b){b.addEventListener('click',function(){
+ document.querySelectorAll('.tg[data-pm]').forEach(function(x){x.classList.remove('on')});b.classList.add('on');
+ pmMode=b.dataset.pm; renderPM();});});
+document.querySelectorAll('.tab').forEach(function(b){b.addEventListener('click',function(){
+ document.querySelectorAll('.tab').forEach(function(x){x.classList.remove('on')});b.classList.add('on');
+ ['bd','sp','pm'].forEach(function(p){el('panel-'+p).classList.toggle('hide',p!==b.dataset.p)});});});
+
+/* ---- SEARCH ---- */
+el('spSearch').addEventListener('input',function(){if(S.us)spRender();});
+document.querySelectorAll('.tg[data-pmv]').forEach(function(b){b.addEventListener('click',function(){
+ document.querySelectorAll('.tg[data-pmv]').forEach(function(x){x.classList.remove('on')});b.classList.add('on');
+ pmView=b.dataset.pmv; renderCal();});});
+el('pmSearch').addEventListener('input',renderCal);
+el('stSearch').addEventListener('input',function(){if(S.us&&S.st)renderST();});
+
+/* ---- COLLAPSE / ACCORDION ---- */
+document.querySelectorAll('.collapsebtn').forEach(function(b){b.addEventListener('click',function(e){
+ e.stopPropagation(); el(b.dataset.collapse).classList.toggle('collapsed');});});
+
+/* ---- ACTION BUTTONS ---- */
+el('btnSample').addEventListener('click',loadSample);
+el('btnReset').addEventListener('click',resetData);
+/* ---- EXPORT: PDF / Print ---- */
+var exportWrap=el('exportWrap'), btnExport=el('btnExport');
+btnExport.addEventListener('click',function(e){e.stopPropagation();exportWrap.classList.toggle('open');});
+document.addEventListener('click',function(){exportWrap.classList.remove('open');});
+function prepExport(){
+  var root=document.documentElement, prev=root.getAttribute('data-theme');
+  root.setAttribute('data-theme','light'); document.body.classList.add('exporting');
+  return function(){document.body.classList.remove('exporting'); if(prev)root.setAttribute('data-theme',prev); else root.removeAttribute('data-theme');};
+}
+function exportPDF(){
+  exportWrap.classList.remove('open');
+  if(!S.dt&&!S.us&&!S.st){ toast('Belum ada data untuk diekspor.','info'); return; }
+  if(typeof html2pdf==='undefined'){ toast('Modul PDF belum termuat. Cek koneksi internet lalu coba lagi.','err'); return; }
+  var cleanup=prepExport(), done=false;
+  function finish(msg,type){ if(done)return; done=true; cleanup(); btnExport.disabled=false; if(msg)toast(msg,type); }
+  btnExport.disabled=true; toast('Membuat PDF...','info');
+  var opt={margin:[8,8,10,8],filename:'Laporan-Maintenance-'+new Date().toISOString().slice(0,10)+'.pdf',
+    image:{type:'jpeg',quality:.97},
+    html2canvas:{scale:2,useCORS:true,allowTaint:true,backgroundColor:'#ffffff',logging:false},
+    jsPDF:{unit:'mm',format:'a4',orientation:'portrait'},
+    pagebreak:{mode:['css','legacy']}};
+  setTimeout(function(){
+    try{
+      html2pdf().set(opt).from(document.querySelector('.wrap')).save()
+        .then(function(){finish('PDF berhasil tersimpan','ok');})
+        .catch(function(){finish('Gagal membuat PDF. Silakan coba lagi.','err');});
+    }catch(e){ finish('Gagal membuat PDF. Silakan coba lagi.','err'); }
+  },70);
+  setTimeout(function(){ if(!done){ done=true; cleanup(); btnExport.disabled=false; toast('Proses PDF dibatalkan (terlalu lama).','err'); } },20000);
+}
+el('optPDF').addEventListener('click',exportPDF);
+el('optPrint').addEventListener('click',function(){exportWrap.classList.remove('open');window.print();});
+</script>
+</body>
+</html>
