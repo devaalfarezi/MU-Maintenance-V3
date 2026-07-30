@@ -72,7 +72,7 @@ body{margin:0;color:var(--tx-1);
 .logo{display:flex;align-items:center;background:#fff;
   border:.5px solid rgba(0,0,0,.06);border-radius:var(--r-md);
   padding:7px 13px;flex-shrink:0;box-shadow:var(--shadow-sm)}
-.logo img{height:61px;width:auto;display:block}
+.logo img{height:42px;width:auto;display:block}
 .brand{flex:1;min-width:0}
 .brand h1{margin:0;font-size:18px;font-weight:700;letter-spacing:-.3px;line-height:1.15;
   white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -82,6 +82,9 @@ body{margin:0;color:var(--tx-1);
   background:var(--bg-card);border:.5px solid var(--bd-1);border-radius:var(--r-pill);
   padding:6px 12px;white-space:nowrap;box-shadow:var(--shadow-sm)}
 .pill .dot{width:7px;height:7px;border-radius:50%;background:var(--tx-3)}
+.credit-top{font-size:12px;font-weight:600;color:var(--tx-3);white-space:nowrap;align-self:center}
+.credit-top b{color:var(--tx-2);font-weight:700}
+@media (max-width:680px){ .credit-top{display:none} }
 .pill.live .dot{background:#37b24d;box-shadow:0 0 0 3px rgba(55,178,77,.18)}
 .pill.sample .dot{background:#e24b4a;box-shadow:0 0 0 3px rgba(226,75,74,.18)}
 
@@ -417,6 +420,7 @@ table.pmcal tr.sig td.cn{color:var(--tx-3);font-weight:700}
           <button class="menu-item" id="optPrint"><i class="ti ti-printer"></i> Cetak</button>
         </div>
       </div>
+      <span class="credit-top">Built by <b>Rizqy</b></span>
       <button class="themebtn btn btn-ico" id="themeBtn" aria-label="Ganti tema terang/gelap"><i class="ti ti-moon"></i></button>
     </div>
   </header>
