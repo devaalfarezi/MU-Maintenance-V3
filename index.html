@@ -722,6 +722,8 @@ function parseDowntime(obj){
   if(!cDur||!cLoss) return null;
 
   function v(r,c){var s=norm(c?r[c]:''); return (!s||s.toLowerCase()==='nan')?'':s;}
+  /* semua kolom berjudul (kuning) -> untuk filter dinamis */
+  var cols=[]; head.forEach(function(h,idx){ if(norm(h)) cols.push({key:h, idx:idx}); });
   var R=[];
   data.forEach(function(r){
     var dur=num(r[cDur]); if(dur==null||dur<0)return;
@@ -732,7 +734,9 @@ function parseDowntime(obj){
     else if(typeof draw==='number'){ dob=new Date(Date.UTC(1899,11,30+Math.floor(draw))); }
     else if(draw){ var pd=new Date(draw); if(!isNaN(pd)) dob=pd; }
     if(dob) yr=dob.getFullYear();
-    R.push({_d:dob, _yr:yr,
+    var _all={}, _num={};
+    cols.forEach(function(cc){ var raw=r[cc.idx]; var s=norm(raw); if(s.toLowerCase()==='nan')s=''; _all[cc.key]=s; var nn=num(raw); if(nn!=null)_num[cc.key]=nn; });
+    R.push({_d:dob, _yr:yr, _all:_all, _num:_num,
       mo:v(r,cMon), dt:v(r,cDate),
       line:v(r,cLine)||'(Kosong)',
       packer:v(r,cPack)||'(Kosong)',
@@ -747,7 +751,20 @@ function parseDowntime(obj){
   });
   if(!R.length) return null;
   var yc={},yy=null,yn=0; R.forEach(function(x){if(x._yr){yc[x._yr]=(yc[x._yr]||0)+1;if(yc[x._yr]>yn){yn=yc[x._yr];yy=x._yr;}}});
-  return {raw:R, hasBkd:!!cBkd, rows:R.length, pm:[], year:yy};
+  /* klasifikasi tiap kolom: num (rentang) / text (centang) / skip (terlalu banyak nilai unik / kosong) */
+  var meta=cols.map(function(cc){
+    var uniq={}, numN=0, nonEmpty=0;
+    R.forEach(function(x){ var s=x._all[cc.key]; if(s){nonEmpty++;uniq[s]=1;} if(x._num[cc.key]!=null)numN++; });
+    var nu=Object.keys(uniq).length;
+    var kind;
+    /* kolom yg isinya kalimat bebas (unik hampir = jumlah baris) -> skip */
+    var freeText = nu>0 && nu>Math.max(80, nonEmpty*0.85);
+    if(numN>=Math.max(1,Math.floor(nonEmpty*0.7)) && nu>12 && !freeText) kind='num';
+    else if(nu>0 && nu<=400 && !freeText) kind='text';
+    else kind='skip';
+    return {key:cc.key, kind:kind, uniq:nu};
+  });
+  return {raw:R, hasBkd:!!cBkd, rows:R.length, pm:[], year:yy, cols:meta};
 }
 
 /* ================= PARSER: USAGE ================= */
@@ -846,41 +863,56 @@ function kpi(id,arr){
    +'<div class="mtext"><p class="k">'+k[0]+'</p><p class="v">'+k[1]+' <span class="u">'+(k[2]||'')+'</span></p></div></div>';
  }).join('');
 }
-var bdMode='eqe', spMode='item', pmMode='2minggu';
+var bdMode=null, spMode='item', pmMode='2minggu';
 
 /* ================= FILTER ENGINE ================= */
 var MO_ORDER=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 var MO_LBL={May:'Mei',Aug:'Agu',Oct:'Okt',Dec:'Des'};
-var FDEF=[{k:'mo',lab:'Bulan'},{k:'line',lab:'Line'},{k:'eqc',lab:'Equipment'},
- {k:'packer',lab:'Packer'},{k:'eqe',lab:'Equipment (Eng. Downtime)'},{k:'det',lab:'Equipment Detail'},
- {k:'cat',lab:'Category BKD'},{k:'loss',lab:'Loss Category'}];
-var BD_DIMS=[{k:'eqe',lab:'Equipment (Eng. Downtime)'},{k:'det',lab:'Equipment Detail'},
- {k:'line',lab:'Line'},{k:'eqc',lab:'Equipment'},{k:'packer',lab:'Packer'},
- {k:'cat',lab:'Category BKD'},{k:'loss',lab:'Loss Category'},{k:'mo',lab:'Bulan'}];
+var FDEF=[];        /* diisi dinamis dari kolom Excel (kolom teks berjudul) */
+var FNUM=[];        /* kolom angka -> filter rentang */
+var NUMF={};        /* {key:{min,max}} */
+function labelOf(h){ return h.replace(/\s*\(Untuk kategori Engineering Downtime\)/i,' (Eng.)'); }
+function buildFilterDefs(){
+  FDEF=[]; FNUM=[]; NUMF={};
+  if(!S.dt||!S.dt.cols) return;
+  S.dt.cols.forEach(function(c){
+    if(c.kind==='text') FDEF.push({k:c.key, lab:labelOf(c.key), col:c.key});
+    else if(c.kind==='num') FNUM.push({k:c.key, lab:labelOf(c.key)});
+  });
+  F={}; FDEF.forEach(function(f){F[f.k]=null;});
+}
+var BD_DIMS=[];
+function buildDims(){ BD_DIMS=FDEF.map(function(f){return {k:f.k,lab:f.lab};}); if(!BD_DIMS.length)BD_DIMS=[{k:'eqe',lab:'Equipment'}]; }
 var F={}, durMin=null, durMax=null;
-FDEF.forEach(function(f){F[f.k]=null;});          /* null = semua dipilih */
 
 function resetFilters(){
-  FDEF.forEach(function(f){F[f.k]=null;});
-  durMin=null; durMax=null;
+  buildFilterDefs();
+  NUMF={}; durMin=null; durMax=null;
   if(el('durMin'))el('durMin').value='';
   if(el('durMax'))el('durMax').value='';
   if(el('dtSearch'))el('dtSearch').value='';
 }
+function gv(r,k){ var v=(r._all&&k in r._all)?r._all[k]:r[k]; return (v===''||v==null)?'(Kosong)':v; }
 function universe(k){
   if(!S.dt)return [];
   S.dt._uni=S.dt._uni||{};
   if(S.dt._uni[k])return S.dt._uni[k];
-  var s={}; S.dt.raw.forEach(function(r){s[r[k]]=1;});
+  var s={}; S.dt.raw.forEach(function(r){s[gv(r,k)]=1;});
   var a=Object.keys(s);
-  if(k==='mo') a.sort(function(x,y){return MO_ORDER.indexOf(x)-MO_ORDER.indexOf(y);});
-  else a.sort(function(x,y){ if(x==='(Kosong)')return 1; if(y==='(Kosong)')return -1; return x.localeCompare(y,'id'); });
+  if(/month|bulan/i.test(k)) a.sort(function(x,y){return MO_ORDER.indexOf(x)-MO_ORDER.indexOf(y);});
+  else a.sort(function(x,y){ if(x==='(Kosong)')return 1; if(y==='(Kosong)')return -1; return String(x).localeCompare(String(y),'id',{numeric:true}); });
   S.dt._uni[k]=a; return a;
 }
 function passRow(r,skipKey){
   for(var i=0;i<FDEF.length;i++){
     var k=FDEF[i].k; if(k===skipKey)continue;
-    var sel=F[k]; if(sel&&!sel[r[k]])return false;
+    var sel=F[k]; if(sel&&!sel[gv(r,k)])return false;
+  }
+  for(var n=0;n<FNUM.length;n++){
+    var nk=FNUM[n].k, rng=NUMF[nk]; if(!rng)continue;
+    var val=(r._num&&nk in r._num)?r._num[nk]:null; if(val==null)continue;
+    if(rng.min!=null&&val<rng.min)return false;
+    if(rng.max!=null&&val>rng.max)return false;
   }
   if(durMin!=null&&r.dur<durMin)return false;
   if(durMax!=null&&r.dur>durMax)return false;
@@ -889,7 +921,7 @@ function passRow(r,skipKey){
 function filteredRows(){ return S.dt?S.dt.raw.filter(function(r){return passRow(r,null);}):[]; }
 function optionCounts(k){
   var m={}; if(!S.dt)return m;
-  S.dt.raw.forEach(function(r){ if(passRow(r,k)) m[r[k]]=(m[r[k]]||0)+1; });
+  S.dt.raw.forEach(function(r){ if(passRow(r,k)){ var g=gv(r,k); m[g]=(m[g]||0)+1; } });
   return m;
 }
 function toggleVal(k,v,on){
@@ -940,11 +972,18 @@ function openDrop(drop){ drop.classList.add('open'); paintList(drop); placeMenu(
   var s=drop.querySelector('.fsearch'); if(s)s.focus(); }
 function paintCaps(){
   var n=0;
-  document.querySelectorAll('#filterBar .fdrop').forEach(function(dp){
+  document.querySelectorAll('#filterBar .fdrop:not(.fnum)').forEach(function(dp){
     var k=dp.getAttribute('data-k'), sel=F[k], vals=universe(k);
     dp.querySelector('.fbtn').classList.toggle('active',!!sel);
     dp.querySelector('.cap').textContent=sel?(Object.keys(sel).length+'/'+vals.length):'semua';
     if(sel)n++;
+  });
+  document.querySelectorAll('#filterBar .fdrop.fnum').forEach(function(dp){
+    var nk=dp.getAttribute('data-nk'), rng=NUMF[nk];
+    var on=rng&&(rng.min!=null||rng.max!=null);
+    dp.querySelector('.fbtn').classList.toggle('active',!!on);
+    dp.querySelector('.cap').textContent=on?((rng.min!=null?rng.min:'')+'\u2013'+(rng.max!=null?rng.max:'')):'semua';
+    if(on)n++;
   });
   if(durMin!=null||durMax!=null)n++;
   return n;
@@ -952,9 +991,10 @@ function paintCaps(){
 function renderFilters(){
   var bar=el('filterBar'); if(!bar)return;
   if(!S.dt||!S.dt.raw){bar.innerHTML='<div class="empty" style="padding:16px 10px"><p>Upload file Excel atau klik \u201cLihat contoh data\u201d untuk memunculkan filter.</p></div>';return;}
-  bar.innerHTML=FDEF.map(function(f){
-    return '<div class="fdrop" data-k="'+f.k+'">'
-      +'<button class="fbtn" type="button">'+f.lab+' <span class="cap">semua</span>'
+  buildFilterDefs(); buildDims();
+  var html=FDEF.map(function(f){
+    return '<div class="fdrop" data-k="'+esc(f.k)+'">'
+      +'<button class="fbtn" type="button" title="'+esc(f.k)+'">'+esc(f.lab)+' <span class="cap">semua</span>'
       +'<i class="ti ti-chevron-down" style="font-size:14px"></i></button>'
       +'<div class="fmenu">'
       +'<div class="fhead"><input class="fsearch" placeholder="Cari\u2026" autocomplete="off">'
@@ -964,10 +1004,22 @@ function renderFilters(){
       +'<button type="button" class="fmini" data-only="1">Pilih yang tampil</button>'
       +'<button type="button" class="fmini" data-clear="1">Kosongkan</button></span></div></div></div>';
   }).join('');
-  document.querySelectorAll('#filterBar .fdrop').forEach(paintList);
+  /* kolom angka -> chip rentang */
+  html+=FNUM.map(function(f){
+    return '<div class="fdrop fnum" data-nk="'+esc(f.k)+'">'
+      +'<button class="fbtn" type="button" title="'+esc(f.k)+'">'+esc(f.lab)+' <span class="cap">semua</span>'
+      +'<i class="ti ti-chevron-down" style="font-size:14px"></i></button>'
+      +'<div class="fmenu"><div style="display:flex;gap:8px;align-items:center;padding:4px 2px">'
+      +'<input class="fsearch nmin" type="number" step="any" placeholder="min" style="margin-bottom:0">'
+      +'<span style="color:var(--tx-3)">\u2013</span>'
+      +'<input class="fsearch nmax" type="number" step="any" placeholder="maks" style="margin-bottom:0"></div>'
+      +'<div class="ffoot"><span class="fcount"></span><button type="button" class="fmini" data-nclear="1">Kosongkan</button></div></div></div>';
+  }).join('');
+  bar.innerHTML=html;
+  document.querySelectorAll('#filterBar .fdrop:not(.fnum)').forEach(paintList);
   paintCaps();
   el('bdDims').innerHTML=BD_DIMS.map(function(x){
-    return '<button class="dim'+(x.k===bdMode?' on':'')+'" data-dim="'+x.k+'">'+x.lab+'</button>';}).join('');
+    return '<button class="dim'+(x.k===bdMode?' on':'')+'" data-dim="'+esc(x.k)+'">'+esc(x.lab)+'</button>';}).join('');
 }
 
 /* ================= RENDER BREAKDOWN ================= */
@@ -1007,7 +1059,7 @@ function computePM(rows){
 function r1(x){return Math.round(x*10)/10;}
 function bdRender(rows){
   var m={};
-  rows.forEach(function(r){ m[r[bdMode]]=(m[r[bdMode]]||0)+r.dur; });
+  rows.forEach(function(r){ var key=gv(r,bdMode); m[key]=(m[key]||0)+r.dur; });
   var arr=Object.keys(m).map(function(k){return [k,r1(m[k])];}).sort(function(a,b){return b[1]-a[1];});
   var lab=''; BD_DIMS.forEach(function(x){if(x.k===bdMode)lab=x.lab;});
   el('bdSub').textContent='total menit downtime per '+lab+' \u00b7 '+arr.length+' nilai'
@@ -1093,7 +1145,15 @@ function renderDT(){
   setPill(D.sample?'sample':'real',D.sample?'Contoh data':'Data ter-upload');
   if(typeof renderCal==='function' && !renderDT._inCal){ renderDT._inCal=true; try{renderCal();}finally{renderDT._inCal=false;} }
 }
-function afterDT(){ resetFilters(); renderFilters(); renderDT(); renderCal(); }
+function afterDT(){
+  resetFilters(); buildDims();
+  if(!bdMode||!FDEF.some(function(f){return f.k===bdMode;})){
+    var pref=FDEF.filter(function(f){return /equipment/i.test(f.k)&&/engineering/i.test(f.k);})[0]
+           ||FDEF.filter(function(f){return /^equipment/i.test(f.k);})[0]||FDEF[0];
+    bdMode=pref?pref.k:null;
+  }
+  renderFilters(); renderDT(); renderCal();
+}
 
 function spRender(){
   var u=S.us; if(!u)return;
@@ -1594,6 +1654,10 @@ el('filterBar').addEventListener('click',function(e){
    if(!open) openDrop(dp);
    return; }
  var mini=e.target.closest?e.target.closest('.fmini'):null;
+ if(mini && mini.getAttribute('data-nclear')){ e.stopPropagation();
+   var dpn=mini.closest('.fdrop'), nk=dpn.getAttribute('data-nk');
+   delete NUMF[nk]; dpn.querySelector('.nmin').value=''; dpn.querySelector('.nmax').value='';
+   renderDT(); return; }
  if(mini){ e.stopPropagation();
    var dp2=mini.closest('.fdrop'), k2=dp2.getAttribute('data-k');
    var q2=(dp2.querySelector('.fsearch').value||'').toLowerCase().trim();
@@ -1610,10 +1674,21 @@ window.addEventListener('resize',function(){
 window.addEventListener('scroll',function(){
  document.querySelectorAll('#filterBar .fdrop.open').forEach(placeMenu);},true);
 el('filterBar').addEventListener('input',function(e){
- if(e.target.classList.contains('fsearch')) paintList(e.target.closest('.fdrop'));});
+ var dp=e.target.closest('.fdrop');
+ if(!dp) return;
+ if(dp.classList.contains('fnum')){
+   var nk=dp.getAttribute('data-nk');
+   var mn=parseFloat(dp.querySelector('.nmin').value), mx=parseFloat(dp.querySelector('.nmax').value);
+   NUMF[nk]={min:isNaN(mn)?null:mn, max:isNaN(mx)?null:mx};
+   if(NUMF[nk].min==null&&NUMF[nk].max==null) delete NUMF[nk];
+   document.querySelectorAll('#filterBar .fdrop:not(.fnum)').forEach(paintList);
+   renderDT(); return;
+ }
+ if(e.target.classList.contains('fsearch')) paintList(dp);});
 el('filterBar').addEventListener('change',function(e){
  var inp=e.target; if(inp.type!=='checkbox')return;
- var dp=inp.closest('.fdrop'), k=dp.getAttribute('data-k');
+ var dp=inp.closest('.fdrop'); if(dp.classList.contains('fnum'))return;
+ var k=dp.getAttribute('data-k');
  if(inp.getAttribute('data-all')) F[k]=inp.checked?null:{};
  else toggleVal(k,inp.getAttribute('data-v'),inp.checked);
  document.querySelectorAll('#filterBar .fdrop').forEach(paintList);
