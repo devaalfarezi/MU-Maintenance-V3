@@ -72,7 +72,7 @@ body{margin:0;color:var(--tx-1);
 .logo{display:flex;align-items:center;background:#fff;
   border:.5px solid rgba(0,0,0,.06);border-radius:var(--r-md);
   padding:7px 13px;flex-shrink:0;box-shadow:var(--shadow-sm)}
-.logo img{height:55px;width:auto;display:block}
+.logo img{height:42px;width:auto;display:block}
 .brand{flex:1;min-width:0}
 .brand h1{margin:0;font-size:18px;font-weight:700;letter-spacing:-.3px;line-height:1.15;
   white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -420,7 +420,7 @@ table.pmcal tr.sig td.cn{color:var(--tx-3);font-weight:700}
           <button class="menu-item" id="optPrint"><i class="ti ti-printer"></i> Cetak</button>
         </div>
       </div>
-      <span class="credit-top">Built by <b>Azmi Dava Alfarizqi</b></span>
+      <span class="credit-top">Built by <b>Rizqy</b></span>
       <button class="themebtn btn btn-ico" id="themeBtn" aria-label="Ganti tema terang/gelap"><i class="ti ti-moon"></i></button>
     </div>
   </header>
@@ -1366,7 +1366,7 @@ function buildCal(){
     });
   }
   breakdownEvents().forEach(function(e){
-    var mp=e.dateObj?mapDate(e.dateObj):null;
+    var mp=(e.dateObj && e.dateObj.getFullYear()===y)?mapDate(e.dateObj):null;
     if(!mp){ var mi=CAL_MO.indexOf(e.mo); if(mi<0)mi=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'].indexOf(e.mo); if(mi<0)return; mp={mi:mi,wom:1,mon:null,sun:null,wk:null}; }
     var ee={}; for(var k in e)ee[k]=e[k];
     ee.mi=mp.mi; ee.wom=mp.wom; ee.week=(mp.wk!=null?mp.wk:null);
