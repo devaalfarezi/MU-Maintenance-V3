@@ -1125,7 +1125,7 @@ function renderDT(){
   rows.forEach(function(r){ total+=r.dur; if(r.isb){bkdN++;bkdDur+=r.dur;} });
 
   kpi('bdKpi',[['Total downtime',nf.format(Math.round(total)),'mnt'],
-   ['Total Kejadian (Count BKD + SST)',nf.format(rows.length),'kejadian'],
+   ['Total Kejadian (Count BKD/SST)',nf.format(rows.length),'kejadian'],
    ['MTTR rata-rata',nf.format(bkdN?Math.round(bkdDur/bkdN):0),'mnt']]);
 
   var byMo={}; rows.forEach(function(r){ if(r.mo)byMo[r.mo]=(byMo[r.mo]||0)+r.dur; });
