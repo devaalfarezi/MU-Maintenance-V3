@@ -338,9 +338,11 @@ table.pmcal tr.sig td.cn{color:var(--tx-3);font-weight:700}
 .pm-modal-legend{display:flex;gap:16px;font-size:12px;color:var(--tx-2);margin-bottom:10px;flex-wrap:wrap}
 .pm-modal-legend .sw{display:inline-flex;align-items:center;gap:6px}
 
-.overlay{position:fixed;inset:0;background:rgba(15,23,42,.45);display:none;align-items:center;justify-content:center;padding:16px;z-index:120}
+.overlay{position:fixed;inset:0;background:rgba(15,23,42,.45);display:none;align-items:stretch;justify-content:flex-end;z-index:120}
 .overlay.open{display:flex}
-.modal{background:var(--bg-card);border:.5px solid var(--bd-1);border-radius:14px;box-shadow:0 24px 60px rgba(0,0,0,.35);width:100%;max-width:640px;max-height:88vh;display:flex;flex-direction:column}
+.modal{background:var(--bg-card);border-left:.5px solid var(--bd-1);border-radius:0;box-shadow:-24px 0 60px rgba(0,0,0,.28);width:100%;max-width:560px;height:100vh;max-height:100vh;display:flex;flex-direction:column;animation:slideInRight .22s ease both}
+@keyframes slideInRight{from{transform:translateX(100%)}to{transform:translateX(0)}}
+@media (max-width:560px){.modal{max-width:100%}}
 .modal-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:13px 18px;border-bottom:.5px solid var(--bd-1)}
 .modal-head .lab{font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--tx-3);font-weight:700}
 .modal-head .ttl{font-size:19px;font-weight:700;line-height:1.2;color:var(--tx-1)}
@@ -378,6 +380,14 @@ table.pmcal tr.sig td.cn{color:var(--tx-3);font-weight:700}
 .jstat{background:var(--ok-bg);color:var(--ok-tx);border-radius:8px;padding:3px 10px;font-weight:600;font-size:12px}
 .backbtn{width:34px;height:34px;border:.5px solid var(--bd-1);background:var(--bg-card);border-radius:9px;cursor:pointer;font-size:17px;color:var(--tx-2);flex-shrink:0}
 .backbtn:hover{background:var(--bg-soft)}
+.calsec{display:flex;align-items:baseline;gap:8px;font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.05em;margin:2px 0 10px;padding-bottom:7px;border-bottom:2px solid var(--bd-1)}
+.calsec.p{color:#8a5a12}
+.calsec.b{color:var(--danger-tx)}
+.calsec.mt{margin-top:22px}
+:root[data-theme="dark"] .calsec.p{color:#f0c063}
+.calsecn{font-size:11px;font-weight:600;color:var(--tx-3);text-transform:none;letter-spacing:0}
+.calnum{min-width:22px;height:22px;border-radius:6px;background:var(--bg-soft);color:var(--tx-2);font-size:12px;font-weight:700;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0}
+.jrownum{font-size:11px;font-weight:700;color:var(--tx-3);margin-bottom:2px}
 
 @media (max-width:680px){
   .brand p{display:none}
@@ -420,7 +430,7 @@ table.pmcal tr.sig td.cn{color:var(--tx-3);font-weight:700}
           <button class="menu-item" id="optPrint"><i class="ti ti-printer"></i> Cetak</button>
         </div>
       </div>
-      <span class="credit-top">Built by <b>Azmi Dava Alfarizqi</b></span>
+      <span class="credit-top">Built by <b>Rizqy</b></span>
       <button class="themebtn btn btn-ico" id="themeBtn" aria-label="Ganti tema terang/gelap"><i class="ti ti-moon"></i></button>
     </div>
   </header>
@@ -1125,7 +1135,7 @@ function renderDT(){
   rows.forEach(function(r){ total+=r.dur; if(r.isb){bkdN++;bkdDur+=r.dur;} });
 
   kpi('bdKpi',[['Total downtime',nf.format(Math.round(total)),'mnt'],
-   ['Total Kejadian (Count BKD/SST)',nf.format(rows.length),'kejadian'],
+   ['Kejadian breakdown',nf.format(rows.length),'kejadian'],
    ['MTTR rata-rata',nf.format(bkdN?Math.round(bkdDur/bkdN):0),'mnt']]);
 
   var byMo={}; rows.forEach(function(r){ if(r.mo)byMo[r.mo]=(byMo[r.mo]||0)+r.dur; });
@@ -1508,84 +1518,78 @@ function renderCal(){
 
 /* --- MODAL kalender: level 1 daftar Proses/Breakdown, level 2 equipment, level 3 detail --- */
 var calCur=null;
-function cellGroups(wi,mi){
-  var c=CAL[wi][mi], it=cellItems(c), G={};
-  function add(e){
-    var key;
-    if(e.kind==='p'){ key=(e.proc && e.proc.toLowerCase()!=='pm' && e.proc!=='') ? e.proc : (e.equipment||'(Tanpa equipment)'); }
-    else { key=(e.cat && e.cat!=='(Kosong)') ? e.cat : (e.loss||'Breakdown'); }
-    var g=G[key]||(G[key]={key:key,kind:e.kind,items:[],eq:{}});
-    g.items.push(e);
-    (g.eq[e.equipment||'(Tanpa equipment)']=g.eq[e.equipment||'(Tanpa equipment)']||[]).push(e);
-    if(e.kind!==g.kind) g.kind='mix';
-  }
-  it.p.forEach(add); it.b.forEach(add);
-  return G;
+function cellByKind(wi,mi){
+  var c=CAL[wi][mi], it=cellItems(c), P={}, B={};
+  it.p.forEach(function(e){ var k=e.equipment||'(Tanpa equipment)'; (P[k]=P[k]||[]).push(e); });
+  it.b.forEach(function(e){ var k=e.equipment||'(Tanpa equipment)'; (B[k]=B[k]||[]).push(e); });
+  return {P:P, B:B};
+}
+function wkMin(arr){ var m=999; arr.forEach(function(e){ if(e.week!=null&&e.week<m)m=e.week; }); return m; }
+function sortEq(map){
+  return Object.keys(map).sort(function(a,b){
+    var wa=wkMin(map[a]), wb=wkMin(map[b]);
+    if(wa!==wb) return wa-wb;                 /* urut minggu paling awal */
+    return String(a).localeCompare(String(b));
+  });
+}
+function wkChip(arr,isB){
+  var wks=arr.map(function(e){return e.week;}).filter(function(x){return x!=null;}).sort(function(a,b){return a-b;});
+  if(!wks.length) return '';
+  var lo=wks[0], hi=wks[wks.length-1];
+  var t='W'+(lo<10?'0':'')+lo+(hi!==lo?'\u2013W'+(hi<10?'0':'')+hi:'');
+  return '<span class="jwk '+(isB?'b':'p')+'">'+t+'</span>';
 }
 var PMCOL=['#3f6fa0','#4b8b6e','#b58a2b','#7a5aa8','#4a7f97','#9a5a3a','#5a7d3a','#8a5a6a'];
 function colorFor(name){ var s=0; for(var i=0;i<name.length;i++)s=(s*31+name.charCodeAt(i))%997; return PMCOL[s%PMCOL.length]; }
 
-function openCalCell(wi,mi){
-  calCur={wi:wi,mi:mi,stack:[]};
-  renderCalLevel1();
-  overlay.classList.add('open');
-}
+function openCalCell(wi,mi){ calCur={wi:wi,mi:mi}; renderCalLevel1(); overlay.classList.add('open'); }
+
+/* LEVEL 1: dua bagian terpisah -> PM (Preventive Maintenance) & BKD (Breakdown),
+   daftar equipment bernomor, diurutkan per minggu, dgn chip W## */
 function renderCalLevel1(){
-  var wi=calCur.wi, mi=calCur.mi, G=cellGroups(wi,mi);
-  var keys=Object.keys(G).sort(function(a,b){return G[b].items.length-G[a].items.length;});
+  var wi=calCur.wi, mi=calCur.mi, kk=cellByKind(wi,mi);
+  var pEq=sortEq(kk.P), bEq=sortEq(kk.B);
   el('m-back').style.display='none';
-  var anyP=keys.some(function(k){return G[k].kind!=='b';}), anyB=keys.some(function(k){return G[k].kind!=='p';});
-  el('m-lab').textContent = (anyP&&anyB)?'PM & BREAKDOWN':(anyB?'BREAKDOWN':'PM (PREVENTIVE MAINTENANCE)');
+  var hasP=pEq.length>0, hasB=bEq.length>0;
+  el('m-lab').textContent=(hasP&&hasB)?'PM & BREAKDOWN':(hasB?'BREAKDOWN':'PM (PREVENTIVE MAINTENANCE)');
   el('m-title').textContent=CAL_MO[mi]+' \u00b7 '+CAL_WK[wi];
-  var tot=0; keys.forEach(function(k){tot+=G[k].items.length;});
+  var tot=0; pEq.forEach(function(e){tot+=kk.P[e].length;}); bEq.forEach(function(e){tot+=kk.B[e].length;});
   el('m-count').textContent=tot; el('m-count-lab').textContent='jadwal';
   var body=el('m-body');
-  if(!keys.length){ body.innerHTML='<div class="empty"><div class="eico"><i class="ti ti-calendar-off"></i></div><p>Tidak ada jadwal/kejadian pada filter ini.</p></div>'; body.scrollTop=0; return; }
-  var html='<div class="grid-hint" style="font-size:13px;color:var(--tx-2);margin-bottom:12px">Klik untuk lihat equipment-nya.</div>';
-  keys.forEach(function(k){
-    var g=G[k], neq=Object.keys(g.eq).length, isB=g.kind==='b';
-    var mark=isB?'<span class="ctri"></span>':'<span class="cdot" style="background:'+colorFor(k)+'"></span>';
-    var bcol=isB?'#e2574c':colorFor(k);
-    html+='<div class="crow" style="border-left-color:'+bcol+'" data-g="'+esc(k)+'">'
-      +'<span class="leftline">'+mark+'<span style="min-width:0"><span class="a">'+esc(k)+'</span>'
-      +'<span class="b">'+nf.format(neq)+' equipment \u00b7 '+nf.format(g.items.length)+' jadwal</span></span></span>'
-      +'<span class="rt"><span class="cbadge" style="background:'+bcol+'">'+nf.format(g.items.length)+'</span><span class="chev">\u203a</span></span></div>';
-  });
+  if(!hasP&&!hasB){ body.innerHTML='<div class="empty"><div class="eico"><i class="ti ti-calendar-off"></i></div><p>Tidak ada jadwal/kejadian pada filter ini.</p></div>'; body.scrollTop=0; return; }
+  function section(title,eqList,map,kind,mt){
+    if(!eqList.length) return '';
+    var isB=kind==='b';
+    var h='<div class="calsec '+(isB?'b':'p')+(mt?' mt':'')+'">'+title+' <span class="calsecn">'+eqList.length+' equipment</span></div>';
+    eqList.forEach(function(eq,idx){
+      var arr=map[eq], bcol=isB?'#e2574c':'#d99a1f';   /* PM = kuning, sama dgn calendar */
+      var mark=isB?'<span class="ctri"></span>':'<span class="cdot" style="background:'+bcol+'"></span>';
+      h+='<div class="crow" style="border-left-color:'+bcol+'" data-kind="'+kind+'" data-eq="'+esc(eq)+'">'
+        +'<span class="leftline"><span class="calnum">'+(idx+1)+'</span>'+mark
+        +'<span style="min-width:0"><span class="a">'+esc(eq)+'</span>'
+        +'<span class="b">'+nf.format(arr.length)+' jadwal</span></span></span>'
+        +'<span class="rt">'+wkChip(arr,isB)+'<span class="cbadge" style="background:'+bcol+'">'+nf.format(arr.length)+'</span><span class="chev">\u203a</span></span></div>';
+    });
+    return h;
+  }
+  var html=section('PM (Preventive Maintenance)',pEq,kk.P,'p',false)
+          +section('BKD (Breakdown)',bEq,kk.B,'b',hasP);
   body.innerHTML=html; body.scrollTop=0;
-  body.querySelectorAll('.crow').forEach(function(r){ r.addEventListener('click',function(){ renderCalLevel2(r.getAttribute('data-g')); }); });
+  body.querySelectorAll('.crow').forEach(function(r){ r.addEventListener('click',function(){ renderCalDetail(r.getAttribute('data-kind'),r.getAttribute('data-eq')); }); });
 }
-function renderCalLevel2(gkey){
-  var G=cellGroups(calCur.wi,calCur.mi), g=G[gkey]; if(!g)return;
-  calCur.g=gkey;
+
+/* LEVEL 2: detail satu equipment (Component, Action, Task, PIC, W##, tanggal), urut per minggu */
+function renderCalDetail(kind,eq){
+  var kk=cellByKind(calCur.wi,calCur.mi), isB=kind==='b';
+  var arr=((isB?kk.B:kk.P)[eq]||[]).slice().sort(function(a,b){return (a.week==null?999:a.week)-(b.week==null?999:b.week);});
   el('m-back').style.display=''; el('m-back').onclick=renderCalLevel1;
-  el('m-lab').textContent=(g.kind==='b'?'BREAKDOWN':'PM')+' \u00b7 '+CAL_MO[calCur.mi]+' '+CAL_WK[calCur.wi];
-  el('m-title').textContent=gkey;
-  var eqs=Object.keys(g.eq).sort();
-  el('m-count').textContent=eqs.length; el('m-count-lab').textContent='equipment';
-  var body=el('m-body');
-  var html='<div class="grid-hint" style="font-size:13px;color:var(--tx-2);margin-bottom:12px">Equipment pada '+(g.kind==='b'?'kategori':'proses')+' ini. Klik untuk lihat detail pekerjaannya.</div>';
-  eqs.forEach(function(eq){
-    var arr=g.eq[eq], isB=arr[0].kind==='b', bcol=isB?'#e2574c':colorFor(gkey);
-    var mark=isB?'<span class="ctri"></span>':'<span class="cdot" style="background:'+bcol+'"></span>';
-    html+='<div class="crow" style="border-left-color:'+bcol+'" data-eq="'+esc(eq)+'">'
-      +'<span class="leftline">'+mark+'<span style="min-width:0"><span class="a">'+esc(eq)+'</span>'
-      +'<span class="b">'+nf.format(arr.length)+' jadwal</span></span></span>'
-      +'<span class="rt"><span class="cbadge" style="background:'+bcol+'">'+nf.format(arr.length)+'</span><span class="chev">\u203a</span></span></div>';
-  });
-  body.innerHTML=html; body.scrollTop=0;
-  body.querySelectorAll('.crow').forEach(function(r){ r.addEventListener('click',function(){ renderCalLevel3(gkey,r.getAttribute('data-eq')); }); });
-}
-function renderCalLevel3(gkey,eq){
-  var G=cellGroups(calCur.wi,calCur.mi), g=G[gkey]; if(!g)return;
-  var arr=g.eq[eq]||[];
-  el('m-back').style.display=''; el('m-back').onclick=function(){renderCalLevel2(gkey);};
-  el('m-lab').textContent=gkey+' \u00b7 '+CAL_MO[calCur.mi]+' '+CAL_WK[calCur.wi];
+  el('m-lab').textContent=(isB?'BKD (Breakdown)':'PM (Preventive Maintenance)')+' \u00b7 '+CAL_MO[calCur.mi]+' '+CAL_WK[calCur.wi];
   el('m-title').textContent=eq;
   el('m-count').textContent=arr.length; el('m-count-lab').textContent='jadwal';
   var body=el('m-body'), html='';
-  arr.forEach(function(e){
-    var isB=e.kind==='b';
+  arr.forEach(function(e,idx){
     html+='<div class="jrow '+(isB?'b':'p')+'">'
+      +'<div class="jrownum">#'+(idx+1)+'</div>'
       +'<div class="jlab">Component</div><div class="jval">'+esc(e.component||'-')+'</div>'
       +'<div class="jgrid">'
       +'<div><div class="jlab">Action</div><div style="font-size:14px;color:var(--tx-1);margin-top:2px">'+esc(e.action||'-')+'</div></div>'
@@ -1604,6 +1608,7 @@ function renderCalLevel3(gkey,eq){
   body.innerHTML=html||'<div class="empty-msg">Tidak ada detail.</div>';
   body.scrollTop=0;
 }
+
 function closeCalModal(){ overlay.classList.remove('open'); }
 
 /* ================= FILE INTAKE ================= */
