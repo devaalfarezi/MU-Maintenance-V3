@@ -420,7 +420,7 @@ table.pmcal tr.sig td.cn{color:var(--tx-3);font-weight:700}
           <button class="menu-item" id="optPrint"><i class="ti ti-printer"></i> Cetak</button>
         </div>
       </div>
-      <span class="credit-top">Built by <b>Rizqy</b></span>
+      <span class="credit-top">Built by <b>Azmi Dava Alfarizqi</b></span>
       <button class="themebtn btn btn-ico" id="themeBtn" aria-label="Ganti tema terang/gelap"><i class="ti ti-moon"></i></button>
     </div>
   </header>
@@ -1125,7 +1125,7 @@ function renderDT(){
   rows.forEach(function(r){ total+=r.dur; if(r.isb){bkdN++;bkdDur+=r.dur;} });
 
   kpi('bdKpi',[['Total downtime',nf.format(Math.round(total)),'mnt'],
-   ['Kejadian breakdown',nf.format(rows.length),'kejadian'],
+   ['Total Kejadian (Count BKD + SST)',nf.format(rows.length),'kejadian'],
    ['MTTR rata-rata',nf.format(bkdN?Math.round(bkdDur/bkdN):0),'mnt']]);
 
   var byMo={}; rows.forEach(function(r){ if(r.mo)byMo[r.mo]=(byMo[r.mo]||0)+r.dur; });
