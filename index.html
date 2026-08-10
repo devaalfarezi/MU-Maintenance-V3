@@ -872,10 +872,20 @@ var FDEF=[];        /* diisi dinamis dari kolom Excel (kolom teks berjudul) */
 var FNUM=[];        /* kolom angka -> filter rentang */
 var NUMF={};        /* {key:{min,max}} */
 function labelOf(h){ return h.replace(/\s*\(Untuk kategori Engineering Downtime\)/i,' (Eng.)'); }
+/* kolom yang TIDAK dijadikan filter (permintaan user) */
+function isExcludedFilter(h){
+  var s=String(h||'').toLowerCase().trim();
+  return /^total spout/.test(s)||/^start$/.test(s)||/^end$/.test(s)
+    ||/^duration/.test(s)||/spout\s*\/\s*line/.test(s)||/^#\s*spout/.test(s)
+    ||/^multiple factor/.test(s)||/^oee impact/.test(s)
+    ||/^cause$/.test(s)||/^discription/.test(s)||/^description/.test(s)
+    ||/^root cause/.test(s)||/^action plan/.test(s)||/^code$/.test(s);
+}
 function buildFilterDefs(){
   FDEF=[]; FNUM=[]; NUMF={};
   if(!S.dt||!S.dt.cols) return;
   S.dt.cols.forEach(function(c){
+    if(isExcludedFilter(c.key)) return;   /* lewati kolom yang diminta dihapus */
     if(c.kind==='text') FDEF.push({k:c.key, lab:labelOf(c.key), col:c.key});
     else if(c.kind==='num') FNUM.push({k:c.key, lab:labelOf(c.key)});
   });
@@ -1679,7 +1689,7 @@ el('filterBar').addEventListener('click',function(e){
      var o={}; all2.forEach(function(v){ if(!q2||v.toLowerCase().indexOf(q2)>=0)o[v]=1; });
      F[k2]=(Object.keys(o).length===all2.length)?null:o;
    } else { F[k2]={}; }
-   document.querySelectorAll('#filterBar .fdrop').forEach(paintList);
+   document.querySelectorAll('#filterBar .fdrop:not(.fnum)').forEach(paintList);
    renderDT(); placeMenu(dp2); return; }
  if(e.target.closest&&e.target.closest('.fmenu')) e.stopPropagation();});
 window.addEventListener('resize',function(){
@@ -1704,7 +1714,7 @@ el('filterBar').addEventListener('change',function(e){
  var k=dp.getAttribute('data-k');
  if(inp.getAttribute('data-all')) F[k]=inp.checked?null:{};
  else toggleVal(k,inp.getAttribute('data-v'),inp.checked);
- document.querySelectorAll('#filterBar .fdrop').forEach(paintList);
+ document.querySelectorAll('#filterBar .fdrop:not(.fnum)').forEach(paintList);
  renderDT(); placeMenu(dp);});
 document.addEventListener('click',function(){
  document.querySelectorAll('#filterBar .fdrop').forEach(function(x){x.classList.remove('open');});});
@@ -1712,7 +1722,7 @@ document.addEventListener('click',function(){
 function durChanged(){
  var a=parseFloat(el('durMin').value), b=parseFloat(el('durMax').value);
  durMin=isNaN(a)?null:a; durMax=isNaN(b)?null:b;
- if(S.dt){document.querySelectorAll('#filterBar .fdrop').forEach(paintList); renderDT();}}
+ if(S.dt){document.querySelectorAll('#filterBar .fdrop:not(.fnum)').forEach(paintList); renderDT();}}
 el('durMin').addEventListener('input',durChanged);
 el('durMax').addEventListener('input',durChanged);
 /* ---- reset & pencarian tabel ---- */
