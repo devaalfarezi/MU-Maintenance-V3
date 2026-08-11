@@ -1,4 +1,5 @@
-# MU — Maintenance & Reliability Dashboard
+# MU — Maintenance & Reliability Dashboard <img width="2048" height="847" alt="image" src="https://github.com/user-attachments/assets/29291253-7660-4ea8-81a9-3ea149c95190" />
+
 
 Dashboard analisis *downtime*, *breakdown*, pemakaian *sparepart* dan penjadwalan *Preventive Maintenance* (PM) untuk **PT. Cipta Mortar Utama (Saint‑Gobain)**. Seluruh perhitungan berjalan **di dalam browser** dari file Excel yang di‑upload tidak ada server, tidak ada database dan data tidak dikirim ke mana pun.
 
