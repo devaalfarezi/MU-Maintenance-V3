@@ -1,4 +1,4 @@
-<img width="2048" height="847" alt="image" src="https://github.com/user-attachments/assets/6dcaf1ed-d68e-43be-811d-22c28e22289f" />
+<img width="447" height="447" alt="image" src="https://github.com/user-attachments/assets/8cef4ef0-8cc6-4115-b84b-706ea3f92915" />
 
 # MU — Maintenance & Reliability Dashboard
 
