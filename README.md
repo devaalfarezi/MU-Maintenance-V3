@@ -67,4 +67,4 @@ Seluruh file Excel diproses **lokal di browser** menggunakan `FileReader`. Tidak
 
 ## Kredit
 
-Dibuat oleh **Azmi Dava Alfarizqi (Rizqy)** — Teknik Industri, President University.
+Dibuat oleh **Azmi Dava Alfarizqi (Davaa)** — Teknik Industri, President University.
