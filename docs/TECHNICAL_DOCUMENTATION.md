@@ -8,9 +8,9 @@ Dokumen ini menjelaskan arsitektur, alur data, dan tiap modul kode di `index.htm
 
 Aplikasi ini sengaja dibuat sebagai **satu berkas `index.html`** tanpa framework, tanpa proses *build*, dan tanpa backend. Alasannya:
 
-- **Portabel** — cukup satu file untuk berjalan; bisa dibuka lokal (double‑click) atau di‑deploy sebagai file statis.
-- **Aman** — semua data Excel diproses di browser; tidak ada data yang keluar dari komputer pengguna.
-- **Mudah dirawat** — tidak ada dependensi yang perlu di‑*install*; hanya beberapa pustaka via CDN.
+- **Portabel** cukup satu file untuk berjalan; bisa dibuka lokal (double‑click) atau di‑deploy sebagai file statis.
+- **Aman** semua data Excel diproses di browser; tidak ada data yang keluar dari komputer pengguna.
+- **Mudah dirawat** tidak ada dependensi yang perlu di‑*install*; hanya beberapa pustaka via CDN.
 
 Konsekuensinya, seluruh HTML, CSS, dan JavaScript berada dalam satu berkas. Struktur besarnya:
 
@@ -226,18 +226,18 @@ Modul yang memetakan jadwal PM dan kejadian breakdown ke grid **bulan × minggu 
 
 ## 5. Konvensi kode
 
-- **Tanpa dependensi build** — semua fungsi berada di satu blok `<script>`.
-- **`filteredRows()` = sumber kebenaran** — jangan menghitung KPI dari data mentah; selalu dari hasil filter.
-- **Kolom dibaca lewat nama header**, bukan indeks angka — karena baris data berupa objek (`r['Packer']`), bukan array. Ini penting: membaca `r[7]` akan `undefined`.
+- **Tanpa dependensi build** semua fungsi berada di satu blok `<script>`.
+- **`filteredRows()` = sumber kebenaran** jangan menghitung KPI dari data mentah; selalu dari hasil filter.
+- **Kolom dibaca lewat nama header**, bukan indeks angka karena baris data berupa objek (`r['Packer']`), bukan array. Ini penting: membaca `r[7]` akan `undefined`.
 - **Escape HTML** setiap nilai dari Excel dengan `esc()` sebelum dimasukkan ke DOM.
-- **Warna penanda:** PM = kuning `#d99a1f`, Breakdown = merah `#e2574c` — konsisten antara kalender dan panel detail.
+- **Warna penanda:** PM = kuning `#d99a1f`, Breakdown = merah `#e2574c` konsisten antara kalender dan panel detail.
 
 ## 6. Menambah/mengubah fitur (panduan singkat)
 
-- **Menambah filter untuk kolom baru** — otomatis: selama kolom punya judul di Excel dan tidak termasuk `isExcludedFilter`, ia akan muncul sebagai filter.
-- **Mengecualikan kolom dari filter** — tambahkan polanya di `isExcludedFilter()`.
-- **Mengubah KPI** — sunting array pada `renderDT()` (bagian `kpi('bdKpi', [...])`).
-- **Mengubah tampilan panel kalender** — sunting `renderCalLevel1()` / `renderCalDetail()`; jangan mengubah `miniMarks()`/`renderCal()` bila hanya ingin mengubah panel.
+- **Menambah filter untuk kolom baru** otomatis: selama kolom punya judul di Excel dan tidak termasuk `isExcludedFilter`, ia akan muncul sebagai filter.
+- **Mengecualikan kolom dari filter** tambahkan polanya di `isExcludedFilter()`.
+- **Mengubah KPI** sunting array pada `renderDT()` (bagian `kpi('bdKpi', [...])`).
+- **Mengubah tampilan panel kalender** sunting `renderCalLevel1()` / `renderCalDetail()`; jangan mengubah `miniMarks()`/`renderCal()` bila hanya ingin mengubah panel.
 - **Selalu validasi** perubahan JavaScript (mis. `node --check`) dan uji dengan data asli sebelum deploy.
 
 ## 7. Uji & validasi
