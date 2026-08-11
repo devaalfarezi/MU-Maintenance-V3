@@ -8,9 +8,9 @@ Dibuat sebagai bagian dari Teknik Industri bertema *reliability‑based preventi
 
 ## Ringkasan
 
-- **Satu file** `index.html` — HTML + CSS + JavaScript murni (tanpa framework).
+- **Satu file** `index.html`  HTML + CSS + JavaScript murni (tanpa framework).
 - Membaca **4 jenis file Excel**: data *Downtime*, *Sparepart Usage*, *Stok Sparepart*, dan *PM Monitoring*.
-- **Filter otomatis** dari semua kolom berjudul pada sheet Excel — bisa dicentang bebas.
+- **Filter otomatis** dari semua kolom berjudul pada sheet Excel bisa dicentang bebas.
 - KPI, grafik tren, analisis per mesin/line, tabel detail kejadian, kalender PM, dan ekspor PDF.
 - **Kalender PM Monitoring** menampilkan jadwal PM (kuning) dan kejadian breakdown (merah) per minggu/bulan, dengan panel detail per equipment.
 - Tema terang/gelap (AMOLED‑friendly).
@@ -56,10 +56,10 @@ Panduan lengkap ada di [docs/USER_GUIDE.md](docs/USER_GUIDE.md).
 
 ## Dokumentasi
 
-- **[Dokumentasi Teknis](docs/TECHNICAL_DOCUMENTATION.md)** — arsitektur, alur data, dan pembahasan tiap modul/fungsi kode.
-- **[User Guide](docs/USER_GUIDE.md)** — panduan langkah demi langkah untuk pengguna akhir.
+- **[Dokumentasi Teknis](docs/TECHNICAL_DOCUMENTATION.md)** arsitektur, alur data, dan pembahasan tiap modul/fungsi kode.
+- **[User Guide](docs/USER_GUIDE.md)** panduan langkah demi langkah untuk pengguna akhir.
 - **[SOP](docs/SOP.md)** — prosedur baku: memperbarui data, deploy, dan pemeliharaan.
-- **[Format Data](docs/DATA_FORMAT.md)** — kolom & sheet Excel yang dibutuhkan.
+- **[Format Data](docs/DATA_FORMAT.md)** kolom & sheet Excel yang dibutuhkan.
 
 ## Privasi data
 
