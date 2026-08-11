@@ -102,4 +102,4 @@ Contoh: `fix: filter angka tidak mengubah KPI saat di-uncheck`.
 
 ## Kontak / kepemilikan
 
-Pemilik & pengembang: **Azmi Dava Alfarizqi (Rizqy)** — Teknik Industri, President University.
+Pemilik & pengembang: **Davaa** — Teknik Industri, President University.
