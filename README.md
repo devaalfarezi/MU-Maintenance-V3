@@ -1,8 +1,8 @@
 # MU — Maintenance & Reliability Dashboard
 
-Dashboard analisis *downtime*, *breakdown*, pemakaian *sparepart*, dan penjadwalan *Preventive Maintenance* (PM) untuk **PT. Cipta Mortar Utama (Saint‑Gobain)**. Seluruh perhitungan berjalan **di dalam browser** dari file Excel yang di‑upload — tidak ada server, tidak ada database, dan data tidak dikirim ke mana pun.
+Dashboard analisis *downtime*, *breakdown*, pemakaian *sparepart* dan penjadwalan *Preventive Maintenance* (PM) untuk **PT. Cipta Mortar Utama (Saint‑Gobain)**. Seluruh perhitungan berjalan **di dalam browser** dari file Excel yang di‑upload tidak ada server, tidak ada database dan data tidak dikirim ke mana pun.
 
-Dibuat sebagai bagian dari skripsi Teknik Industri bertema *reliability‑based preventive maintenance*.
+Dibuat sebagai bagian dari Teknik Industri bertema *reliability‑based preventive maintenance*.
 
 ---
 
@@ -10,8 +10,8 @@ Dibuat sebagai bagian dari skripsi Teknik Industri bertema *reliability‑based 
 
 - **Satu file** `index.html` — HTML + CSS + JavaScript murni (tanpa framework).
 - Membaca **4 jenis file Excel**: data *Downtime*, *Sparepart Usage*, *Stok Sparepart*, dan *PM Monitoring*.
-- **Filter otomatis** dari semua kolom berjudul pada sheet Excel — bisa dicentang bebas.
-- KPI, grafik tren, analisis per mesin/line, tabel detail kejadian, kalender PM, dan ekspor PDF.
+- **Filter otomatis** dari semua kolom berjudul pada sheet Excel bisa dicentang bebas, sehingga bebas untuk menghitung bagian mana pun.
+- KPI, grafik tren, analisis per mesin/line, tabel detail kejadian, kalender PM dan ekspor PDF.
 - **Kalender PM Monitoring** menampilkan jadwal PM (kuning) dan kejadian breakdown (merah) per minggu/bulan, dengan panel detail per equipment.
 - Tema terang/gelap (AMOLED‑friendly).
 
@@ -67,4 +67,4 @@ Seluruh file Excel diproses **lokal di browser** menggunakan `FileReader`. Tidak
 
 ## Kredit
 
-Dibuat oleh **Azmi Dava Alfarizqi (Davaa)** — Teknik Industri, President University.
+Dibuat oleh **(Davaa)** — Teknik Industri, President University.
