@@ -8,8 +8,8 @@ Panduan penggunaan untuk pengguna akhir (tim maintenance, engineering, atau revi
 
 Ada dua cara:
 
-- **Online** — buka alamat situs yang sudah di‑deploy (mis. di Vercel).
-- **Lokal** — klik dua kali file `index.html`, akan terbuka di browser.
+- **Online** buka alamat situs yang sudah di‑deploy (mis. di Vercel).
+- **Lokal** klik dua kali file `index.html`, akan terbuka di browser.
 
 > Disarankan memakai Google Chrome atau Microsoft Edge versi terbaru.
 
@@ -53,9 +53,9 @@ Semua yang tampil di layar (KPI, grafik, ringkasan, tabel, kalender) mengikuti f
 
 Tiga kartu ringkasan:
 
-- **Total downtime** — total menit berhenti pada data terfilter.
-- **Kejadian breakdown** — jumlah kejadian.
-- **MTTR rata‑rata** — rata‑rata menit per kejadian breakdown.
+- **Total downtime** total menit berhenti pada data terfilter.
+- **Kejadian breakdown** jumlah kejadian.
+- **MTTR rata‑rata** rata‑rata menit per kejadian breakdown.
 
 ### 3.3 Ringkasan per Line
 
