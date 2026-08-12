@@ -1093,7 +1093,7 @@ function renderLine(rows){
   var ks=Object.keys(m).sort();
   el('lineWrap').innerHTML=ks.map(function(k){var o=m[k];
     return '<div class="lirow"><span class="litxt"><span class="a">'+esc(k)+'</span>'
-      +'<span class="b">'+nf.format(o.n)+' baris \u00b7 '+nf.format(o.b)+' kejadian breakdown</span></span>'
+      +'<span class="b">'+nf.format(o.n)+' data\u00b7 '+nf.format(o.b)+' kejadian BKD/SST/SPEEDLOSS</span></span>'
       +'<span class="riteflex">'
       +'<span class="tag" style="background:var(--info-bg);color:var(--info-tx)">Duration '+nf.format(Math.round(o.dur))+' mnt</span>'
       +'</span></div>';
@@ -1135,8 +1135,8 @@ function renderDT(){
   rows.forEach(function(r){ total+=r.dur; if(r.isb){bkdN++;bkdDur+=r.dur;} });
 
   kpi('bdKpi',[['Total downtime',nf.format(Math.round(total)),'mnt'],
-   ['Kejadian breakdown',nf.format(rows.length),'kejadian'],
-   ['MTTR rata-rata',nf.format(bkdN?Math.round(bkdDur/bkdN):0),'mnt']]);
+   ['Kejadian BKD/SST/Speedloss',nf.format(rows.length),'kejadian'],
+   ['MTTR (rata-rata waktu repair',nf.format(bkdN?Math.round(bkdDur/bkdN):0),'mnt']]);
 
   var byMo={}; rows.forEach(function(r){ if(r.mo)byMo[r.mo]=(byMo[r.mo]||0)+r.dur; });
   var month=MO_ORDER.map(function(m){return [MO_LBL[m]||m,Math.round(byMo[m]||0)];})
