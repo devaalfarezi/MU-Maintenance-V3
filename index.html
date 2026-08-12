@@ -1093,7 +1093,7 @@ function renderLine(rows){
   var ks=Object.keys(m).sort();
   el('lineWrap').innerHTML=ks.map(function(k){var o=m[k];
     return '<div class="lirow"><span class="litxt"><span class="a">'+esc(k)+'</span>'
-      +'<span class="b">'+nf.format(o.n)+' baris</span></span>'
+      +'<span class="b">'+nf.format(o.n)+' BKD/SST/SPEEDLOSS</span></span>'
       +'<span class="riteflex">'
       +'<span class="tag" style="background:var(--info-bg);color:var(--info-tx)">Duration '+nf.format(Math.round(o.dur))+' mnt</span>'
       +'</span></div>';
