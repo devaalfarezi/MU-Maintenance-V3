@@ -189,7 +189,7 @@ body{margin:0;color:var(--tx-1);
 .lirow:hover{background:var(--bg-soft)}
 .lirow:last-child{border-bottom:none}
 .litxt{min-width:0}
-.litxt .a{font-size:18px;display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:500}
+.litxt .a{font-size:14px;display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:500}
 .litxt .b{font-size:12px;color:var(--tx-3)}
 .tag{font-size:12px;padding:4px 10px;border-radius:var(--r-pill);white-space:nowrap;font-weight:600}
 .intv{font-size:11px;padding:3px 9px;border-radius:var(--r-pill);background:var(--bg-soft);color:var(--tx-2);white-space:nowrap;font-weight:600}
@@ -1093,7 +1093,7 @@ function renderLine(rows){
   var ks=Object.keys(m).sort();
   el('lineWrap').innerHTML=ks.map(function(k){var o=m[k];
     return '<div class="lirow"><span class="litxt"><span class="a">'+esc(k)+'</span>'
-      +'<span class="b">'+nf.format(o.n)+' BKD/SST/SPEEDLOSS</span></span>'
+      +'<span class="b">'+nf.format(o.n)+' baris \u00b7 '+nf.format(o.b)+' kejadian breakdown</span></span>'
       +'<span class="riteflex">'
       +'<span class="tag" style="background:var(--info-bg);color:var(--info-tx)">Duration '+nf.format(Math.round(o.dur))+' mnt</span>'
       +'</span></div>';
@@ -1135,8 +1135,8 @@ function renderDT(){
   rows.forEach(function(r){ total+=r.dur; if(r.isb){bkdN++;bkdDur+=r.dur;} });
 
   kpi('bdKpi',[['Total downtime',nf.format(Math.round(total)),'mnt'],
-   ['Kejadian BKD/SST/Speedloss',nf.format(rows.length),'kejadian'],
-   ['MTTR (rata-rata waktu repair',nf.format(bkdN?Math.round(bkdDur/bkdN):0),'mnt']]);
+   ['Kejadian breakdown',nf.format(rows.length),'kejadian'],
+   ['MTTR rata-rata',nf.format(bkdN?Math.round(bkdDur/bkdN):0),'mnt']]);
 
   var byMo={}; rows.forEach(function(r){ if(r.mo)byMo[r.mo]=(byMo[r.mo]||0)+r.dur; });
   var month=MO_ORDER.map(function(m){return [MO_LBL[m]||m,Math.round(byMo[m]||0)];})
